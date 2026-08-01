@@ -14,5 +14,7 @@
 *.log
 *.cod
 *.cso
+imgui.ini
+tmp/
 Rendering/3dgp/
 ShaderLab/External/DirectXTex/Bin/

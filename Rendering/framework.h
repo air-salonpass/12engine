@@ -11,6 +11,8 @@
 #include "high_resolution_timer.h"
 
 #include <memory>
+#include <future>
+#include <string>
 #include <DirectXMath.h>
 
 #include "geometric_primitive.h"
@@ -26,6 +28,7 @@
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
+#include "ThirdParty/ImGuizmo/ImGuizmo.h"
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern ImWchar glyphRangesJapanese[];
 #endif
@@ -33,7 +36,7 @@ extern ImWchar glyphRangesJapanese[];
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 #define FULLSCREEN FALSE
-#define APPLICATION_NAME L"X3DGP"
+#define APPLICATION_NAME L"Jisaku Engine Model Viewer"
 
 class framework
 {
@@ -69,6 +72,7 @@ public:
 #ifdef USE_IMGUI
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
+		ImGui::GetIO().IniFilename = nullptr;
 		ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 14.0f, nullptr, glyphRangesJapanese);
 		ImGui_ImplWin32_Init(hwnd);
 		ImGui_ImplDX11_Init(device, immediate_context);
@@ -84,10 +88,17 @@ public:
 			}
 			else
 			{
+				if (IsIconic(hwnd))
+				{
+					WaitMessage();
+					continue;
+				}
 				tictoc.tick();
 				calculate_frame_stats();
-				update(tictoc.time_interval());
-				render(tictoc.time_interval());
+				const float raw_elapsed_time = tictoc.time_interval();
+				const float elapsed_time = raw_elapsed_time > 0.1f ? 0.1f : raw_elapsed_time;
+				update(elapsed_time);
+				render(elapsed_time);
 			}
 		}
 
@@ -188,6 +199,11 @@ private:
 	void update(float elapsed_time/*Elapsed seconds from last frame*/);
 	void render(float elapsed_time/*Elapsed seconds from last frame*/);
 	bool uninitialize();
+	bool browse_and_load_gltf();
+	bool load_gltf(const std::string& filename);
+	void queue_gltf_load(const std::string& filename);
+	void poll_gltf_load();
+	void focus_gltf_model();
 
 private:
 	// =====================================================
@@ -206,6 +222,8 @@ private:
 	float cameraYawDegrees = 0.0f;
 	float cameraPitchDegrees = 0.0f;
 	float cameraOrbitSensitivity = 0.2f;
+	bool focusKeyWasDown = false;
+	bool vsyncEnabled = true;
 
 	// ブルームと最終出力をCPU／ImGuiから調整する値。Releaseでも初期値を使って描画する。
 	float luminanceThreshold = 0.8f;
@@ -223,8 +241,11 @@ private:
 	bool showSpriteShowcase = false;
 	bool showPrimitiveShowcase = false;
 	bool showStaticMeshShowcase = false;
-	bool showSkinnedMeshShowcase = true;
+	bool showSkinnedMeshShowcase = false;
 	bool showGltfShowcase = true;
+	bool showViewerGrid = true;
+	bool showModelBounds = true;
+	bool showBackdrop = false;
 	bool showPrimitiveWireframe = false;
 	bool showcaseAutoRotate = false;
 	int spriteBlendMode = 0;
@@ -260,13 +281,23 @@ private:
 	};
 
 	// UNIT41: FBXから変換した小型テストメッシュを、中央のFBXモデルと重ならない右側へ配置する。
-	float gltfPosition[3] = { 0.65f, 0.75f, 0.8f };
+	float gltfPosition[3] = { 0.0f, 0.0f, 0.0f };
 	float gltfRotation[3] = { 0.0f, 0.0f, 0.0f };
 	// UNIT41: FBX2glTFが保持した単位系に合わせ、変換済みモデルを確認できる大きさへ拡大する。
-	float gltfScale = 1000.0f;
+	float gltfScale = 1.0f;
 	int gltfAnimationIndex = 0;
 	float gltfAnimationTime = 0.0f;
 	bool gltfAnimationPlaying = true;
+	bool gltfAnimationLoop = true;
+	float gltfAnimationSpeed = 1.0f;
+	std::string loadedModelPath;
+	std::string modelLoadError;
+	std::string pendingModelPath;
+	std::future<std::unique_ptr<gltf_model>> pendingGltfModel;
+	bool modelLoading = false;
+	int gizmoOperation = 0;
+	bool gizmoLocalSpace = false;
+	bool gizmoIsUsing = false;
 
 	high_resolution_timer tictoc;
 	uint32_t frames_per_second{ 0 };

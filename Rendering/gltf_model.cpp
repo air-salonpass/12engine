@@ -148,11 +148,13 @@ gltf_model::gltf_model(ID3D11Device* device, const std::string& filename)
 			filename);
 	}
 
-	_ASSERT_EXPR_A(warning.empty(), warning.c_str());
-	_ASSERT_EXPR_A(error.empty(), error.c_str());
-	_ASSERT_EXPR_A(succeeded, "Failed to load glTF file.");
 	if (!succeeded)
 	{
+		load_error = error.empty() ? "Failed to load glTF/GLB file." : error;
+		if (!warning.empty())
+		{
+			load_error += "\n" + warning;
+		}
 		return;
 	}
 
@@ -440,6 +442,37 @@ void gltf_model::fetch_meshes(ID3D11Device* device, const tinygltf::Model& sourc
 			for (const auto& attribute : source_primitive.attributes)
 			{
 				const tinygltf::Accessor& accessor = source_model.accessors.at(attribute.second);
+				if (attribute.first == "POSITION" &&
+					accessor.minValues.size() >= 3 && accessor.maxValues.size() >= 3)
+				{
+					const DirectX::XMFLOAT3 accessor_min
+					{
+						static_cast<float>(accessor.minValues[0]),
+						static_cast<float>(accessor.minValues[1]),
+						static_cast<float>(accessor.minValues[2])
+					};
+					const DirectX::XMFLOAT3 accessor_max
+					{
+						static_cast<float>(accessor.maxValues[0]),
+						static_cast<float>(accessor.maxValues[1]),
+						static_cast<float>(accessor.maxValues[2])
+					};
+					if (!has_bounds)
+					{
+						bounding_box_min = accessor_min;
+						bounding_box_max = accessor_max;
+						has_bounds = true;
+					}
+					else
+					{
+						bounding_box_min.x = (std::min)(bounding_box_min.x, accessor_min.x);
+						bounding_box_min.y = (std::min)(bounding_box_min.y, accessor_min.y);
+						bounding_box_min.z = (std::min)(bounding_box_min.z, accessor_min.z);
+						bounding_box_max.x = (std::max)(bounding_box_max.x, accessor_max.x);
+						bounding_box_max.y = (std::max)(bounding_box_max.y, accessor_max.y);
+						bounding_box_max.z = (std::max)(bounding_box_max.z, accessor_max.z);
+					}
+				}
 				const tinygltf::BufferView& source_buffer_view =
 					source_model.bufferViews.at(accessor.bufferView);
 				const int stride = accessor.ByteStride(source_buffer_view);

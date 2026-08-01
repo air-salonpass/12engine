@@ -3,10 +3,158 @@
 #include "texture.h"
 #include <DirectXMath.h>
 #include <algorithm>
+#include <chrono>
 #include <cmath>
+#include <commdlg.h>
+#include <filesystem>
+
+namespace
+{
+	std::string to_native_path(const wchar_t* text)
+	{
+		if (!text || !*text)
+		{
+			return {};
+		}
+		const int size = WideCharToMultiByte(
+			CP_ACP, 0, text, -1, nullptr, 0, nullptr, nullptr);
+		std::string result(static_cast<size_t>(size), '\0');
+		WideCharToMultiByte(
+			CP_ACP, 0, text, -1, result.data(), size, nullptr, nullptr);
+		result.pop_back();
+		return result;
+	}
+}
 
 framework::framework(HWND hwnd) : hwnd(hwnd)
 {
+}
+
+bool framework::load_gltf(const std::string& filename)
+{
+	modelLoadError.clear();
+	auto candidate = std::make_unique<gltf_model>(device, filename);
+	if (!candidate->loaded)
+	{
+		modelLoadError = candidate->load_error.empty() ?
+			"The selected model could not be loaded." : candidate->load_error;
+		return false;
+	}
+
+	gltf_models[0] = std::move(candidate);
+	loadedModelPath = filename;
+	gltfAnimationIndex = 0;
+	gltfAnimationTime = 0.0f;
+	gltfAnimationPlaying = !gltf_models[0]->animations.empty();
+	focus_gltf_model();
+	return true;
+}
+
+bool framework::browse_and_load_gltf()
+{
+	if (modelLoading)
+	{
+		return false;
+	}
+	wchar_t filename[MAX_PATH]{};
+	OPENFILENAMEW dialog{};
+	dialog.lStructSize = sizeof(dialog);
+	dialog.hwndOwner = hwnd;
+	dialog.lpstrFilter = L"glTF model (*.gltf;*.glb)\0*.gltf;*.glb\0All files (*.*)\0*.*\0";
+	dialog.lpstrFile = filename;
+	dialog.nMaxFile = _countof(filename);
+	dialog.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR;
+	if (!GetOpenFileNameW(&dialog))
+	{
+		return false;
+	}
+	queue_gltf_load(to_native_path(filename));
+	return true;
+}
+
+void framework::queue_gltf_load(const std::string& filename)
+{
+	if (modelLoading || filename.empty())
+	{
+		return;
+	}
+	modelLoadError.clear();
+	pendingModelPath = filename;
+	modelLoading = true;
+	Microsoft::WRL::ComPtr<ID3D11Device> loading_device(device);
+	try
+	{
+		pendingGltfModel = std::async(
+			std::launch::async,
+			[loading_device, filename]()
+			{
+				const HRESULT com_result = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+				auto result = std::make_unique<gltf_model>(loading_device.Get(), filename);
+				if (SUCCEEDED(com_result))
+				{
+					CoUninitialize();
+				}
+				return result;
+			});
+	}
+	catch (const std::exception& exception)
+	{
+		modelLoading = false;
+		modelLoadError = exception.what();
+	}
+}
+
+void framework::poll_gltf_load()
+{
+	if (!modelLoading || !pendingGltfModel.valid() ||
+		pendingGltfModel.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
+	{
+		return;
+	}
+
+	try
+	{
+		auto candidate = pendingGltfModel.get();
+		if (candidate && candidate->loaded)
+		{
+			gltf_models[0] = std::move(candidate);
+			loadedModelPath = pendingModelPath;
+			gltfAnimationIndex = 0;
+			gltfAnimationTime = 0.0f;
+			gltfAnimationPlaying = !gltf_models[0]->animations.empty();
+			focus_gltf_model();
+		}
+		else
+		{
+			modelLoadError = candidate && !candidate->load_error.empty() ?
+				candidate->load_error : "The selected model could not be loaded.";
+		}
+	}
+	catch (const std::exception& exception)
+	{
+		modelLoadError = exception.what();
+	}
+	modelLoading = false;
+	pendingModelPath.clear();
+}
+
+void framework::focus_gltf_model()
+{
+	if (!gltf_models[0] || !gltf_models[0]->has_bounds)
+	{
+		return;
+	}
+	const DirectX::XMFLOAT3& bmin = gltf_models[0]->bounding_box_min;
+	const DirectX::XMFLOAT3& bmax = gltf_models[0]->bounding_box_max;
+	const float scale = (std::max)(std::abs(gltfScale), 0.0001f);
+	cameraTarget[0] = gltfPosition[0] - (bmin.x + bmax.x) * 0.5f * scale;
+	cameraTarget[1] = gltfPosition[1] + (bmin.y + bmax.y) * 0.5f * scale;
+	cameraTarget[2] = gltfPosition[2] + (bmin.z + bmax.z) * 0.5f * scale;
+	const float sx = (bmax.x - bmin.x) * scale;
+	const float sy = (bmax.y - bmin.y) * scale;
+	const float sz = (bmax.z - bmin.z) * scale;
+	const float radius = 0.5f * std::sqrt(sx * sx + sy * sy + sz * sz);
+	cameraDistance = (std::clamp)(radius * 2.5f, 0.5f, 100.0f);
 }
 
 bool framework::initialize()
@@ -341,9 +489,7 @@ bool framework::initialize()
 			30.0f); // アニメーションは1秒あたり30キーフレームで取り込む。
 
 	// UNIT41: FBX2glTFでcube.004.fbxから変換したGLBを読み込み、変換結果を実機で確認する。
-	gltf_models[0] = std::make_unique<gltf_model>(
-		device,
-		".\\resources\\gltf\\ConvertedCube004\\cube.004.glb");
+	load_gltf(".\\resources\\gltf\\CesiumMan\\CesiumMan.gltf");
 
 	// 1280x720のHDRシーンと、ダウンサンプリングした640x360の高輝度画像を作る。
 	framebuffers[0] = std::make_unique<framebuffer>(device, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -365,6 +511,7 @@ bool framework::initialize()
 
 void framework::update(float elapsed_time)
 {
+	poll_gltf_load();
 }
 
 void framework::render(float elapsed_time)
@@ -383,12 +530,135 @@ void framework::render(float elapsed_time)
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	ImGui::SetNextWindowPos(ImVec2(10.0f, 10.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(390.0f, 700.0f), ImGuiCond_Always);
+	ImGui::Begin("Model Viewer");
+	if (ImGui::Button("Open glTF / GLB..."))
+	{
+		browse_and_load_gltf();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Focus (F)"))
+	{
+		focus_gltf_model();
+	}
+	ImGui::SameLine();
+	ImGui::Checkbox("Visible", &showGltfShowcase);
+	if (!loadedModelPath.empty())
+	{
+		ImGui::TextWrapped("%s", loadedModelPath.c_str());
+	}
+	if (!modelLoadError.empty())
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.35f, 0.25f, 1.0f), "%s", modelLoadError.c_str());
+	}
+
+	ImGui::Separator();
+	ImGui::Checkbox("Ground Grid", &showViewerGrid);
+	ImGui::SameLine();
+	ImGui::Checkbox("Bounds", &showModelBounds);
+	ImGui::SameLine();
+	ImGui::Checkbox("Backdrop", &showBackdrop);
+
+	if (gltf_models[0] && gltf_models[0]->loaded)
+	{
+		ImGui::Text(
+			"Nodes %d  Meshes %d  Materials %d  Animations %d",
+			static_cast<int>(gltf_models[0]->nodes.size()),
+			static_cast<int>(gltf_models[0]->meshes.size()),
+			static_cast<int>(gltf_models[0]->materials.size()),
+			static_cast<int>(gltf_models[0]->animations.size()));
+
+		if (ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (!gltf_models[0]->animations.empty())
+			{
+				gltfAnimationIndex = (std::clamp)(
+					gltfAnimationIndex, 0,
+					static_cast<int>(gltf_models[0]->animations.size()) - 1);
+				const gltf_model::animation& selected_animation =
+					gltf_models[0]->animations[static_cast<size_t>(gltfAnimationIndex)];
+				const std::string selected_name = selected_animation.name.empty() ?
+					("Animation " + std::to_string(gltfAnimationIndex)) : selected_animation.name;
+				if (ImGui::BeginCombo("Clip", selected_name.c_str()))
+				{
+					for (size_t index = 0; index < gltf_models[0]->animations.size(); ++index)
+					{
+						const gltf_model::animation& animation = gltf_models[0]->animations[index];
+						const std::string name = animation.name.empty() ?
+							("Animation " + std::to_string(index)) : animation.name;
+						const bool selected = static_cast<int>(index) == gltfAnimationIndex;
+						if (ImGui::Selectable(name.c_str(), selected))
+						{
+							gltfAnimationIndex = static_cast<int>(index);
+							gltfAnimationTime = 0.0f;
+						}
+						if (selected) ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::Checkbox("Play", &gltfAnimationPlaying);
+				ImGui::SameLine();
+				ImGui::Checkbox("Loop", &gltfAnimationLoop);
+				ImGui::DragFloat("Speed", &gltfAnimationSpeed, 0.05f, 0.0f, 4.0f, "%.2fx");
+				const float duration = gltf_models[0]->animations[
+					static_cast<size_t>(gltfAnimationIndex)].duration;
+				ImGui::SliderFloat("Time", &gltfAnimationTime, 0.0f, duration, "%.3f sec");
+			}
+			else
+			{
+				ImGui::TextDisabled("This model has no animation clips.");
+			}
+		}
+
+		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat3("Model Position", gltfPosition, 0.01f);
+			ImGui::DragFloat3("Model Rotation", gltfRotation, 1.0f);
+			ImGui::DragFloat("Model Scale", &gltfScale, 0.01f, 0.0001f, 1000.0f, "%.4f");
+		}
+
+		if (ImGui::CollapsingHeader("PBR Materials"))
+		{
+			for (size_t index = 0; index < gltf_models[0]->materials.size(); ++index)
+			{
+				const gltf_model::material& material = gltf_models[0]->materials[index];
+				const std::string label = material.name.empty() ?
+					("Material " + std::to_string(index)) : material.name;
+				if (ImGui::TreeNode(reinterpret_cast<void*>(index + 1), "%s", label.c_str()))
+				{
+					const auto& pbr = material.data.pbr_metallic_roughness_data;
+					ImGui::ColorButton(
+						"Base Color",
+						ImVec4(pbr.basecolor_factor[0], pbr.basecolor_factor[1],
+							pbr.basecolor_factor[2], pbr.basecolor_factor[3]));
+					ImGui::Text("Metalness %.3f", pbr.metallic_factor);
+					ImGui::Text("Roughness %.3f", pbr.roughness_factor);
+					ImGui::Text("Alpha mode %d", material.data.alpha_mode);
+					ImGui::TreePop();
+				}
+			}
+		}
+
+		if (ImGui::CollapsingHeader("Scene Nodes"))
+		{
+			for (size_t index = 0; index < gltf_models[0]->nodes.size(); ++index)
+			{
+				const auto& node = gltf_models[0]->nodes[index];
+				ImGui::BulletText("%s", node.name.empty() ? "(unnamed node)" : node.name.c_str());
+			}
+		}
+	}
+	ImGui::Separator();
+	ImGui::TextDisabled("RMB: orbit  MMB: pan  Wheel: zoom  F: focus");
+	ImGui::End();
+
 	// 最終確認画面では右側へ固定し、左側の2D・3D展示物を隠さない幅にする。
 	ImGui::SetNextWindowPos(
 		ImVec2(static_cast<float>(SCREEN_WIDTH - 410), 10.0f),
 		ImGuiCond_Always);
 	ImGui::SetNextWindowSize(ImVec2(400.0f, 700.0f), ImGuiCond_Always);
-	ImGui::Begin("Animation + UNIT41 Showcase");
+	ImGui::Begin("Rendering Settings");
 	// 数値入力の幅を固定し、右側に表示される項目名がウインドウ外へ切れないようにする。
 	ImGui::PushItemWidth(220.0f);
 
@@ -451,9 +721,24 @@ void framework::render(float elapsed_time)
 		cos_pitch,
 		cos_yaw * sin_pitch
 	};
+	if (io.MouseDown[2] && !io.WantCaptureMouse)
+	{
+		const float pan_scale = cameraDistance * 0.0015f;
+		const float shift_right = -io.MouseDelta.x * pan_scale;
+		const float shift_up = io.MouseDelta.y * pan_scale;
+		cameraTarget[0] += camera_right.x * shift_right + camera_up.x * shift_up;
+		cameraTarget[1] += camera_right.y * shift_right + camera_up.y * shift_up;
+		cameraTarget[2] += camera_right.z * shift_right + camera_up.z * shift_up;
+	}
+	const bool focus_key_down = (GetAsyncKeyState('F') & 0x8000) != 0;
+	if (focus_key_down && !focusKeyWasDown && !io.WantCaptureKeyboard)
+	{
+		focus_gltf_model();
+	}
+	focusKeyWasDown = focus_key_down;
 
 	const float mouse_wheel = io.MouseWheel;
-	if (mouse_wheel != 0.0f)
+	if (mouse_wheel != 0.0f && !io.WantCaptureMouse)
 	{
 		const float previous_distance = cameraDistance;
 		const float next_distance = (std::clamp)(
@@ -754,20 +1039,23 @@ void framework::render(float elapsed_time)
 	immediate_context->PSSetSamplers(0, 3, sampler_states);
 
 	// 背景は面カリング・深度判定・深度書込みを使わず、オフスクリーン全体へ描く。
-	immediate_context->RSSetState(rasterizer_states[2].Get());
-	immediate_context->OMSetDepthStencilState(depth_stencil_states[3], 0);
-	immediate_context->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
-	sprite_batches[0]->begin(immediate_context);
-	sprite_batches[0]->render(
-		immediate_context,
-		0.0f,
-		0.0f,
-		static_cast<float>(SCREEN_WIDTH),
-		static_cast<float>(SCREEN_HEIGHT),
-		1.0f, 1.0f, 1.0f, 1.0f,
-		0.0f,
-		0.0f, 0.0f, 1600.0f, 900.0f);
-	sprite_batches[0]->end(immediate_context);
+	if (showBackdrop)
+	{
+		immediate_context->RSSetState(rasterizer_states[2].Get());
+		immediate_context->OMSetDepthStencilState(depth_stencil_states[3], 0);
+		immediate_context->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
+		sprite_batches[0]->begin(immediate_context);
+		sprite_batches[0]->render(
+			immediate_context,
+			0.0f,
+			0.0f,
+			static_cast<float>(SCREEN_WIDTH),
+			static_cast<float>(SCREEN_HEIGHT),
+			1.0f, 1.0f, 1.0f, 1.0f,
+			0.0f,
+			0.0f, 0.0f, 1600.0f, 900.0f);
+		sprite_batches[0]->end(immediate_context);
+	}
 
 	if (showSpriteShowcase)
 	{
@@ -805,6 +1093,33 @@ void framework::render(float elapsed_time)
 	// キャラクターでは背面カリングと深度判定・書込みを元に戻す。
 	immediate_context->RSSetState(rasterizer_states[0].Get());
 	immediate_context->OMSetDepthStencilState(depth_stencil_states[0], 0);
+	if (showViewerGrid)
+	{
+		for (int line = -10; line <= 10; ++line)
+		{
+			const bool axis = line == 0;
+			XMFLOAT4X4 grid_world{};
+			XMStoreFloat4x4(
+				&grid_world,
+				XMMatrixScaling(20.0f, 0.006f, axis ? 0.025f : 0.012f) *
+				XMMatrixTranslation(0.0f, -0.003f, static_cast<float>(line)));
+			geometric_primitives[0]->render(
+				immediate_context,
+				grid_world,
+				axis ? XMFLOAT4{ 0.85f, 0.18f, 0.18f, 1.0f } :
+					XMFLOAT4{ 0.25f, 0.28f, 0.32f, 1.0f });
+
+			XMStoreFloat4x4(
+				&grid_world,
+				XMMatrixScaling(axis ? 0.025f : 0.012f, 0.006f, 20.0f) *
+				XMMatrixTranslation(static_cast<float>(line), -0.003f, 0.0f));
+			geometric_primitives[0]->render(
+				immediate_context,
+				grid_world,
+				axis ? XMFLOAT4{ 0.18f, 0.45f, 0.90f, 1.0f } :
+					XMFLOAT4{ 0.25f, 0.28f, 0.32f, 1.0f });
+		}
+	}
 
 	if (showcaseAutoRotate)
 	{
@@ -938,11 +1253,19 @@ void framework::render(float elapsed_time)
 			gltf_models[0]->animations.at(static_cast<size_t>(gltfAnimationIndex));
 		if (gltfAnimationPlaying)
 		{
-			gltfAnimationTime += elapsed_time;
+			gltfAnimationTime += elapsed_time * gltfAnimationSpeed;
 		}
 		if (animation.duration > 0.0f && gltfAnimationTime >= animation.duration)
 		{
-			gltfAnimationTime = std::fmod(gltfAnimationTime, animation.duration);
+			if (gltfAnimationLoop)
+			{
+				gltfAnimationTime = std::fmod(gltfAnimationTime, animation.duration);
+			}
+			else
+			{
+				gltfAnimationTime = animation.duration;
+				gltfAnimationPlaying = false;
+			}
 		}
 		gltf_models[0]->animate(
 			static_cast<size_t>(gltfAnimationIndex),
@@ -953,6 +1276,29 @@ void framework::render(float elapsed_time)
 	else if (showGltfShowcase)
 	{
 		gltf_models[0]->render(immediate_context, gltf_world);
+	}
+	if (showGltfShowcase && showModelBounds && gltf_models[0]->has_bounds)
+	{
+		const XMFLOAT3& bmin = gltf_models[0]->bounding_box_min;
+		const XMFLOAT3& bmax = gltf_models[0]->bounding_box_max;
+		const XMMATRIX bounds_matrix =
+			XMMatrixScaling(
+				bmax.x - bmin.x,
+				bmax.y - bmin.y,
+				bmax.z - bmin.z) *
+			XMMatrixTranslation(
+				(bmin.x + bmax.x) * 0.5f,
+				(bmin.y + bmax.y) * 0.5f,
+				(bmin.z + bmax.z) * 0.5f) *
+			gltf_world_matrix;
+		XMFLOAT4X4 bounds_world{};
+		XMStoreFloat4x4(&bounds_world, bounds_matrix);
+		immediate_context->RSSetState(rasterizer_states[1].Get());
+		geometric_primitives[0]->render(
+			immediate_context,
+			bounds_world,
+			{ 1.0f, 0.75f, 0.10f, 1.0f });
+		immediate_context->RSSetState(rasterizer_states[2].Get());
 	}
 	// UNIT38: glTF専用サンプラーを使い終えたので、後段のブルーム処理用サンプラーへ戻す。
 	immediate_context->PSSetSamplers(0, 3, sampler_states);

@@ -1,27 +1,33 @@
 # 自作エンジン
 
-完成済みの描画エンジンとシェーダープログラミング環境を、1つの Visual Studio ソリューションへ統合した構成です。
+完成済みの描画エンジンとシェーダーを土台にした Direct3D 11 エンジンです。元教材フォルダーは変更せず、このディレクトリへ組み込んだコピーだけを編集します。
 
-## プロジェクト
+## 現在の機能
 
-- `JisakuRendering` (`Rendering/`): Direct3D 11、スプライト、プリミティブ、FBX スキニング、glTF、PBR/IBL、オフスクリーン描画、ブルーム
-- `JisakuShaderLab` (`ShaderLab/`): Basic/Lambert/Phong、スプライト、プリミティブ、glTF、ルートモーション、IK、衝突判定、シーン群
-- `DirectXTex`: `JisakuShaderLab` が使用するテクスチャライブラリ
+- FBX スキニング・アニメーション
+- glTF / GLB、PBR マテリアル、IBL
+- HDR、ブルーム、トーンマッピング
+- スプライト、プリミティブ、OBJ
+- ゲーム画面内モデルビューア
+  - 任意の `.gltf` / `.glb` をファイルダイアログから読み込み
+  - アニメーションクリップ選択、再生、一時停止、ループ、速度、時間スクラブ
+  - PBR マテリアル値、ノード数、メッシュ数、シーンノード一覧
+  - 位置・回転・スケール編集
+  - 原点グリッドとモデル境界ボックス
+  - 右ドラッグでオービット、中ドラッグで平行移動、ホイールでズーム、`F` でモデルへフォーカス
 
-教材 PDF、ZIP、インストーラー、古い完成サンプル、`.obj/.pdb/.tlog` などのビルド生成物は統合対象から除外しています。実行に必要なソース、HLSL、モデル、テクスチャ、ヘッダー、ライブラリは含まれています。
+シェーダープログラミング側から再利用する HLSL は `Rendering/ShaderLibrary/` に保存しています。ゲープロ側の C++、シーン、衝突判定、DirectXTex プロジェクトはビルド対象から削除済みです。
 
 ## ビルド
 
 Visual Studio 2022 で `JisakuEngine.sln` を開き、`Debug | x64` または `Release | x64` を選択してビルドします。
 
-コマンドラインの場合:
-
 ```powershell
 & 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe' .\JisakuEngine.sln /t:Build /p:Configuration=Debug /p:Platform=x64 /m
 ```
 
-起動する側を Visual Studio のスタートアッププロジェクトに設定してください。
+実行時の作業ディレクトリは `Rendering` にしてください。
 
 ## 外部要件
 
-`JisakuRendering` の FBX 読み込みには Autodesk FBX SDK 2020.3.1 を使用します。既定の参照先は `C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.1` です。
+FBX 読み込みには Autodesk FBX SDK 2020.3.1 を使用します。既定の参照先は `C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.1` です。

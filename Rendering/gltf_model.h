@@ -198,6 +198,10 @@ public:
 	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> buffers;
 	int default_scene{ 0 };
 	bool loaded{ false };
+	bool has_bounds{ false };
+	DirectX::XMFLOAT3 bounding_box_min{ 0, 0, 0 };
+	DirectX::XMFLOAT3 bounding_box_max{ 0, 0, 0 };
+	std::string load_error;
 
 private:
 	std::string filename;
