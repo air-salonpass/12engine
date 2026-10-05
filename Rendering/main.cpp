@@ -1,7 +1,7 @@
 #include <time.h>
 
 #include "DirectX12/NativePreview.h"
-//a
+
 namespace
 {
 	window_application* active_application = nullptr;
