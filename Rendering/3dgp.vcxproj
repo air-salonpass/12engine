@@ -120,17 +120,17 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;USE_IMGUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/utf-8 /wd4828 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\cereal-master\include;$(ProjectDir)\DirectXTK-main\Inc;$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+		<AdditionalIncludeDirectories>$(ProjectDir)\cereal-master\include;$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)\DirectXTK-main\Bin\Desktop_2019\x64\Debug;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.1\lib\vs2019\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>zlib-md.lib;libxml2-md.lib;libfbxsdk-md.lib;d3d11.lib;dxgi.lib;comdlg32.lib;DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+		<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+		<AdditionalDependencies>d3d12.lib;dxgi.lib;comdlg32.lib;ole32.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ShaderModel>5.0</ShaderModel>
+	  <ShaderModel>6.3</ShaderModel>
       <ObjectFileOutput>%(Filename).cso</ObjectFileOutput>
       <AssemblerOutput>AssemblyCode</AssemblerOutput>
       <AssemblerOutputFile>%(Filename).cod</AssemblerOutputFile>
@@ -144,7 +144,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_IMGUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/utf-8 /wd4828 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)\cereal-master\include;$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -173,10 +173,10 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;USE_IMGUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/utf-8 /wd4828 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\cereal-master\include;$(ProjectDir)\DirectXTK-main\Inc;$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+		<AdditionalIncludeDirectories>$(ProjectDir)\cereal-master\include;$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -184,69 +184,103 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)\DirectXTK-main\Bin\Desktop_2019\x64\Release;C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.1\lib\vs2019\x64\release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>zlib-md.lib;libxml2-md.lib;libfbxsdk-md.lib;d3d11.lib;dxgi.lib;comdlg32.lib;DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+		<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+		<AdditionalDependencies>d3d12.lib;dxgi.lib;comdlg32.lib;ole32.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ShaderModel>5.0</ShaderModel>
+	  <ShaderModel>6.3</ShaderModel>
       <ObjectFileOutput>%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-	<ClCompile Include="framebuffer.cpp" />
-	<ClCompile Include="fullscreen_quad.cpp" />
-	<ClCompile Include="gltf_model.cpp" />
-	<ClCompile Include="ThirdParty\ImGuizmo\ImGuizmo.cpp" />
-    <ClCompile Include="geometric_primitive.cpp" />
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_dx11.cpp" />
-    <ClCompile Include="imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="imgui\imgui_ja_gryph_ranges.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="framework.cpp" />
-    <ClCompile Include="shader.cpp" />
-    <ClCompile Include="skinned_mesh.cpp" />
-    <ClCompile Include="sprite.cpp" />
-    <ClCompile Include="sprite_batch.cpp" />
-    <ClCompile Include="static_mesh.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+	<ClCompile Include="DirectX12\CommandQueue.cpp" />
+	<ClCompile Include="DirectX12\DescriptorAllocator.cpp" />
+	<ClCompile Include="DirectX12\Device.cpp" />
+	<ClCompile Include="DirectX12\Renderer.cpp" />
+	<ClCompile Include="DirectX12\GltfModel.cpp" />
+	<ClCompile Include="DirectX12\GltfRenderer.cpp" />
+	<ClCompile Include="DirectX12\EditorImGui.cpp">
+	  <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
+	</ClCompile>
+	<ClCompile Include="DirectX12\SceneRenderTarget.cpp" />
+	<ClCompile Include="DirectX12\ScreenSpaceReflection.cpp" />
+	<ClCompile Include="DirectX12\NativePreview.cpp" />
+	<ClCompile Include="DirectX12\EditorViewTarget.cpp" />
+	<ClCompile Include="DirectX12\ModelResourceManager.cpp" />
+	<ClCompile Include="DirectX12\SceneGeometryRenderer.cpp" />
+	<ClCompile Include="DirectX12\EnvironmentLighting.cpp" />
+	<ClCompile Include="DirectX12\AnimationSystem12.cpp" />
+	<ClCompile Include="DirectX12\TinyGltfImplementation.cpp" />
+	<ClCompile Include="Threading\AtomicJobWorker.cpp" />
+	<ClCompile Include="ThirdParty\ImGuizmo\ImGuizmo.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="imgui\imgui.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
+    </ClCompile>
+	<ClCompile Include="imgui\imgui_impl_dx12.cpp">
+	  <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
+	</ClCompile>
+    <ClCompile Include="imgui\imgui_impl_win32.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_ja_gryph_ranges.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-	<ClInclude Include="framebuffer.h" />
-	<ClInclude Include="fullscreen_quad.h" />
-	<ClInclude Include="gltf_model.h" />
+	<ClInclude Include="DirectX12\CommandQueue.h" />
+	<ClInclude Include="DirectX12\DescriptorAllocator.h" />
+	<ClInclude Include="DirectX12\Device.h" />
+	<ClInclude Include="DirectX12\Renderer.h" />
+	<ClInclude Include="DirectX12\GltfModel.h" />
+	<ClInclude Include="DirectX12\GltfRenderer.h" />
+	<ClInclude Include="DirectX12\EditorImGui.h" />
+	<ClInclude Include="DirectX12\SceneRenderTarget.h" />
+	<ClInclude Include="DirectX12\ScreenSpaceReflection.h" />
+	<ClInclude Include="DirectX12\NativePreview.h" />
+	<ClInclude Include="DirectX12\EditorViewTarget.h" />
+	<ClInclude Include="DirectX12\ModelResourceManager.h" />
+	<ClInclude Include="DirectX12\SceneGeometryRenderer.h" />
+	<ClInclude Include="DirectX12\EnvironmentLighting.h" />
+	<ClInclude Include="DirectX12\AnimationSystem12.h" />
+	<ClInclude Include="WindowApplication.h" />
+	<ClInclude Include="Threading\AtomicJobWorker.h" />
+	<ClInclude Include="Scene\Entity.h" />
+	<ClInclude Include="Scene\SceneRegistry.h" />
+	<ClInclude Include="Components\AnimationComponent.h" />
+	<ClInclude Include="Components\AnimationControllerComponent.h" />
+	<ClInclude Include="Components\CameraComponent.h" />
+	<ClInclude Include="Components\DirectionalLightComponent.h" />
+	<ClInclude Include="Components\ModelRendererComponent.h" />
+	<ClInclude Include="Components\NameComponent.h" />
+	<ClInclude Include="Components\PostProcessComponent.h" />
+	<ClInclude Include="Components\PrefabComponent.h" />
+	<ClInclude Include="Components\ReflectionFloorComponent.h" />
+	<ClInclude Include="Components\RenderingSettingsComponent.h" />
+	<ClInclude Include="Components\TransformComponent.h" />
 	<ClInclude Include="ThirdParty\ImGuizmo\ImGuizmo.h" />
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="geometric_primitive.h" />
-    <ClInclude Include="high_resolution_timer.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_impl_dx11.h" />
+	<ClInclude Include="imgui\imgui_impl_dx12.h" />
     <ClInclude Include="imgui\imgui_impl_win32.h" />
     <ClInclude Include="imgui\imgui_internal.h" />
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="misc.h" />
-    <ClInclude Include="shader.h" />
-    <ClInclude Include="skinned_mesh.h" />
-    <ClInclude Include="sprite.h" />
-    <ClInclude Include="sprite_batch.h" />
-    <ClInclude Include="static_mesh.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="texture.h" />
 	<ClInclude Include="tinygltf-release\json.hpp" />
 	<ClInclude Include="tinygltf-release\tiny_gltf.h" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="gltf_model.hlsli" />
-	<None Include="bidirectional_reflectance_distribution_function.hlsli" />
-	<None Include="image_based_lighting.hlsli" />
+	<None Include="COMPONENT_SYSTEM_GUIDE.md" />
+	<None Include="DirectX12\TEAM_DEVELOPMENT_GUIDE.md" />
 	<None Include="resources\environments\hilly_terrain_01_puresky\skybox.dds" />
 	<None Include="resources\environments\hilly_terrain_01_puresky\diffuse_iem.dds" />
 	<None Include="resources\environments\hilly_terrain_01_puresky\specular_pmrem.dds" />
@@ -255,79 +289,219 @@
 	<None Include="resources\gltf\2CylinderEngine\2CylinderEngine0.bin" />
 	<None Include="resources\gltf\ConvertedCube004\cube.004.glb" />
 	<None Include="tinygltf-release\LICENSE" />
-	<None Include="fullscreen_quad.hlsli" />
-    <None Include="geometric_primitive.hlsli" />
-    <None Include="sprite.hlsli" />
-    <None Include="static_mesh.hlsli" />
-	<None Include="skinned_mesh.hlsli" />
-	<None Include="ShaderLibrary\**\*.*" />
+	<None Include="ShaderLibrary\Basic.hlsli" />
+	<None Include="ShaderLibrary\BasicPS.hlsl" />
+	<None Include="ShaderLibrary\BasicVS.hlsl" />
+	<None Include="ShaderLibrary\ColorFilterPS.hlsl" />
+	<None Include="ShaderLibrary\FullscreenQuad.hlsli" />
+	<None Include="ShaderLibrary\FullscreenQuadPS.hlsl" />
+	<None Include="ShaderLibrary\FullscreenQuadVS.hlsl" />
+	<None Include="ShaderLibrary\Lambert.hlsli" />
+	<None Include="ShaderLibrary\LambertPS.hlsl" />
+	<None Include="ShaderLibrary\LambertVS.hlsl" />
+	<None Include="ShaderLibrary\Phong.hlsli" />
+	<None Include="ShaderLibrary\PhongPS.hlsl" />
+	<None Include="ShaderLibrary\PhongVS.hlsl" />
+	<None Include="ShaderLibrary\PrimitiveRenderer.hlsli" />
+	<None Include="ShaderLibrary\PrimitiveRendererPS.hlsl" />
+	<None Include="ShaderLibrary\PrimitiveRendererVS.hlsl" />
+	<None Include="ShaderLibrary\Scene.hlsli" />
+	<None Include="ShaderLibrary\ShapeRenderer.hlsli" />
+	<None Include="ShaderLibrary\ShapeRendererPS.hlsl" />
+	<None Include="ShaderLibrary\ShapeRendererVS.hlsl" />
+	<None Include="ShaderLibrary\Skinning.hlsli" />
+	<None Include="ShaderLibrary\Sprite.hlsli" />
+	<None Include="ShaderLibrary\SpritePS.hlsl" />
+	<None Include="ShaderLibrary\SpriteVS.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\common.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering_directional_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering_emissive_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering_indirect_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering_point_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering_spot_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\depth_of_field_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\depth_of_field.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\filter_functions.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\flat_shading_gs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\flow_brush_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gaussian_filtering_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gaussian_filtering.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gbuffer.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\geometric_primitive_object_data.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\geometric_primitive_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\geometric_primitive_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\geometric_primitive.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\geometry_particle_gs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\geometry_particle_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\geometry_particle_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\geometry_particle.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_cascade_shadowmap_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_outline_gs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_outline_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_outline.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_smake_rising.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_smoke_rising_gs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_smoke_rising_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_smoke_rising_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_gbuffer_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_gbuffer_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_gbuffer.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_object_data.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_shadow_caster_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_shadow_caster.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\gltf_model.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\lights.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\luminance_extract_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\physical_based_rendering_functions.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\physical_based_rendering_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\physical_based_rendering_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\physical_based_rendering.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\ray_marching_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\sat_blur_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\scene_constant_buffer.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\sea_sprite_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\shading_functions.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\shading_models.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\sky_box_gbuffer_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\sky_box_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\sky_box_use_ibl_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\sky_box_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\sky_box.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\sprite_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\sprite_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\sprite.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\static_mesh_object_data.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\static_mesh_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\static_mesh_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\static_mesh.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\summed_area_table_x_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\summed_area_table_y_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\summed_area_table.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\test_calculate_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingII\volumetric_light_shaft_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\chromatic_aberration_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\common.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_begin_frame_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_bitonic_sort_b2_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_bitonic_sort_c2_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_bitonic_sort.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_emit_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_end_frame_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_init_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_render_gs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_render_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_render_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_sort_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_update_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting_indirect_inner_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting_indirect_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting_point_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting_spot_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_directional_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_emissive_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_indirect_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_indirect_ssao_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_point_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_spot_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\displacement_mapping_ds.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\displacement_mapping_hs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\displacement_mapping_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\displacement_mapping_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\displacement_mapping.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\fast_approximate_anti_aliasing_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\filter_functions.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\final_pass_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer_decal_constant_buffer.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer_decal_primitive_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer_decal_primitive.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer_decal_sprite_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer_decal_sprite.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\geometric_primitive_object_data.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\geometric_primitive_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\geometric_primitive_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\geometric_primitive.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\geometry_particle_gs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\geometry_particle_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\geometry_particle_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\geometry_particle.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_forward_instancing_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_forward_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_forward_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_forward.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_gbuffer_instancing_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_gbuffer_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_gbuffer_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_object_data.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_shadow_caster_instancing_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_shadow_caster_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_shadow_caster.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\lights.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\motion_blur_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\motion_blur.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\pmx_model_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\pmx_model_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\pmx_model.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\radial_blur_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\sat_blur_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\scene_constant_buffer.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_ambient_occlusion_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_composite_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_ex_color_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_ex_composite_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_ex_uv_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_ex.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\shading_functions.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\shading_models.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\sky_box_forward_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\sky_box_gbuffer_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\sky_box_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\sky_box.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\sprite_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\sprite_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\sprite.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\static_mesh_object_data.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\static_mesh_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\static_mesh_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\static_mesh.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\summed_area_table_x_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\summed_area_table_y_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\summed_area_table.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\terrain_grass_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive_ds.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive_gs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive_hs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\tessellation_primitive_ds.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\tessellation_primitive_hs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\tessellation_primitive_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\tessellation_primitive_vs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\tessellation_primitive.hlsli" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\test_calculate_cs.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\velocity_neighbor_max_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\velocity_tile_max_ps.hlsl" />
+	<None Include="ShaderLibrary\ShaderProgrammingIII\vignette_ps.hlsl" />
   </ItemGroup>
   <ItemGroup>
-	<FxCompile Include="blur_ps.hlsl">
-	  <ShaderType>Pixel</ShaderType>
-	</FxCompile>
-	<FxCompile Include="fullscreen_quad_ps.hlsl">
-	  <ShaderType>Pixel</ShaderType>
-	</FxCompile>
-	<FxCompile Include="fullscreen_quad_vs.hlsl">
-	  <ShaderType>Vertex</ShaderType>
-	</FxCompile>
-	<FxCompile Include="gltf_model_ps.hlsl">
-	  <ShaderType>Pixel</ShaderType>
-	</FxCompile>
-	<FxCompile Include="gltf_model_vs.hlsl">
-	  <ShaderType>Vertex</ShaderType>
-	</FxCompile>
-    <FxCompile Include="geometric_primitive_ps.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="geometric_primitive_vs.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-    </FxCompile>
-	<FxCompile Include="luminance_extraction_ps.hlsl">
-	  <ShaderType>Pixel</ShaderType>
-	</FxCompile>
-    <FxCompile Include="sprite_ps.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="sprite_vs.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-    </FxCompile>
-    <FxCompile Include="static_mesh_ps.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="static_mesh_vs.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-    </FxCompile>
-    <FxCompile Include="skinned_mesh_ps.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="skinned_mesh_vs.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    <FxCompile Include="DirectX12\Shaders\GltfMeshMS.hlsl">
+      <ShaderType Condition="'$(Platform)'=='x64'">Mesh</ShaderType>
+      <AdditionalOptions Condition="'$(Platform)'=='x64'">/Tms_6_5 %(AdditionalOptions)</AdditionalOptions>
+      <EntryPointName>MSMain</EntryPointName>
+      <ObjectFileOutput>$(OutDir)GltfMeshMS.cso</ObjectFileOutput>
+      <ExcludedFromBuild Condition="'$(Platform)'!='x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

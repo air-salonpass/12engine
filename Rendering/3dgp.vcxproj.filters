@@ -1,245 +1,307 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-	<ClCompile Include="framebuffer.cpp">
-	  <Filter>Sources</Filter>
-	</ClCompile>
-	<ClCompile Include="fullscreen_quad.cpp">
-	  <Filter>Sources</Filter>
-	</ClCompile>
-	<ClCompile Include="gltf_model.cpp">
-	  <Filter>Sources</Filter>
-	</ClCompile>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{9f64f4ff-d9e0-43d7-88e1-13e6d3656a89}</UniqueIdentifier>
-      <Extensions>hlsl;hlsli</Extensions>
-    </Filter>
-    <Filter Include="Headers">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resources">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Sources">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="imgui">
-      <UniqueIdentifier>{5d2ed881-4062-49d0-a1ce-86240074d016}</UniqueIdentifier>
-    </Filter>
+    <Filter Include="DirectX12"><UniqueIdentifier>{B44FE52D-E19F-44D6-9A27-4AB27D7B1A01}</UniqueIdentifier></Filter>
+    <Filter Include="Components"><UniqueIdentifier>{964A4995-780F-4702-A0F8-EF128BBBFCD8}</UniqueIdentifier></Filter>
+    <Filter Include="Scene"><UniqueIdentifier>{6EC45B16-69D0-4EC5-A725-F2093E03B827}</UniqueIdentifier></Filter>
+    <Filter Include="Threading"><UniqueIdentifier>{C9FDEEE4-9E32-46C2-A5A4-7E84D2FD8F22}</UniqueIdentifier></Filter>
+    <Filter Include="ThirdParty"><UniqueIdentifier>{A85CE978-F382-48D3-B494-B8ADBD4EC032}</UniqueIdentifier></Filter>
+    <Filter Include="ImGui"><UniqueIdentifier>{5D2ED881-4062-49D0-A1CE-86240074D016}</UniqueIdentifier></Filter>
+    <Filter Include="Resources"><UniqueIdentifier>{67DA6AB6-F800-4C08-8B7A-83BB121AAD01}</UniqueIdentifier></Filter>
+    <Filter Include="Documentation"><UniqueIdentifier>{E5D816EA-09E8-42E2-B743-E14DF4FB0501}</UniqueIdentifier></Filter>
+    <Filter Include="Application"><UniqueIdentifier>{08CC20C5-68FC-41D5-AF71-F24F9B827632}</UniqueIdentifier></Filter>
+    <Filter Include="DirectX12\Shaders"><UniqueIdentifier>{4F447A27-53B4-4D0A-A8D5-24A533C281ED}</UniqueIdentifier></Filter>
+    <Filter Include="Shader Library"><UniqueIdentifier>{BA35FD11-53A4-45A2-87E4-4D315A15C66A}</UniqueIdentifier></Filter>
+    <Filter Include="Shader Library\Common"><UniqueIdentifier>{321C8588-9E7D-4995-A09C-DB7588F53507}</UniqueIdentifier></Filter>
+    <Filter Include="Shader Library\Shader Programming II"><UniqueIdentifier>{DF1938C8-B67A-4B85-B743-63DF81EA377E}</UniqueIdentifier></Filter>
+    <Filter Include="Shader Library\Shader Programming III"><UniqueIdentifier>{85931580-9061-45AF-A615-002F39567A75}</UniqueIdentifier></Filter>
   </ItemGroup>
   <ItemGroup>
-	<ClInclude Include="framebuffer.h">
-	  <Filter>Headers</Filter>
-	</ClInclude>
-	<ClInclude Include="fullscreen_quad.h">
-	  <Filter>Headers</Filter>
-	</ClInclude>
-	<ClInclude Include="gltf_model.h">
-	  <Filter>Headers</Filter>
-	</ClInclude>
-	<ClInclude Include="tinygltf-release\json.hpp">
-	  <Filter>Headers</Filter>
-	</ClInclude>
-	<ClInclude Include="tinygltf-release\tiny_gltf.h">
-	  <Filter>Headers</Filter>
-	</ClInclude>
-    <ClCompile Include="framework.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_draw.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_dx11.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_win32.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_ja_gryph_ranges.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_widgets.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="sprite.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="sprite_batch.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="texture.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="shader.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="geometric_primitive.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="static_mesh.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="skinned_mesh.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
+    <ClCompile Include="DirectX12\CommandQueue.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\DescriptorAllocator.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\Device.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\Renderer.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\GltfModel.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\GltfRenderer.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\EditorImGui.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\SceneRenderTarget.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\ScreenSpaceReflection.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\NativePreview.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\EditorViewTarget.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\ModelResourceManager.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\SceneGeometryRenderer.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\EnvironmentLighting.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\AnimationSystem12.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\TinyGltfImplementation.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="Threading\AtomicJobWorker.cpp"><Filter>Threading</Filter></ClCompile>
+    <ClCompile Include="ThirdParty\ImGuizmo\ImGuizmo.cpp"><Filter>ThirdParty</Filter></ClCompile>
+    <ClCompile Include="imgui\imgui.cpp"><Filter>ImGui</Filter></ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp"><Filter>ImGui</Filter></ClCompile>
+    <ClCompile Include="imgui\imgui_impl_dx12.cpp"><Filter>ImGui</Filter></ClCompile>
+    <ClCompile Include="imgui\imgui_impl_win32.cpp"><Filter>ImGui</Filter></ClCompile>
+    <ClCompile Include="imgui\imgui_ja_gryph_ranges.cpp"><Filter>ImGui</Filter></ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp"><Filter>ImGui</Filter></ClCompile>
+    <ClCompile Include="main.cpp"><Filter>Application</Filter></ClCompile>
   </ItemGroup>
   <ItemGroup>
-	<None Include="gltf_model.hlsli">
-	  <Filter>Shaders</Filter>
-	</None>
-	<None Include="bidirectional_reflectance_distribution_function.hlsli">
-	  <Filter>Shaders</Filter>
-	</None>
-	<None Include="image_based_lighting.hlsli">
-	  <Filter>Shaders</Filter>
-	</None>
-	<None Include="resources\environments\hilly_terrain_01_puresky\skybox.dds">
-	  <Filter>Resources</Filter>
-	</None>
-	<None Include="resources\environments\hilly_terrain_01_puresky\diffuse_iem.dds">
-	  <Filter>Resources</Filter>
-	</None>
-	<None Include="resources\environments\hilly_terrain_01_puresky\specular_pmrem.dds">
-	  <Filter>Resources</Filter>
-	</None>
-	<None Include="resources\environments\hilly_terrain_01_puresky\lut_ggx.dds">
-	  <Filter>Resources</Filter>
-	</None>
-	<None Include="resources\gltf\2CylinderEngine\2CylinderEngine.gltf">
-	  <Filter>Resources</Filter>
-	</None>
-	<None Include="resources\gltf\2CylinderEngine\2CylinderEngine0.bin">
-	  <Filter>Resources</Filter>
-	</None>
-	<None Include="resources\gltf\ConvertedCube004\cube.004.glb">
-	  <Filter>Resources</Filter>
-	</None>
-	<None Include="tinygltf-release\LICENSE">
-	  <Filter>Resources</Filter>
-	</None>
-	<None Include="fullscreen_quad.hlsli">
-	  <Filter>Shaders</Filter>
-	</None>
-    <ClInclude Include="framework.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="high_resolution_timer.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="misc.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imconfig.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_dx11.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_win32.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_internal.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_rectpack.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_textedit.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_truetype.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="sprite.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="sprite_batch.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="geometric_primitive.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="static_mesh.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="skinned_mesh.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
+    <ClInclude Include="DirectX12\CommandQueue.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\DescriptorAllocator.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\Device.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\Renderer.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\GltfModel.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\GltfRenderer.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\EditorImGui.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\SceneRenderTarget.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\ScreenSpaceReflection.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\NativePreview.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\EditorViewTarget.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\ModelResourceManager.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\SceneGeometryRenderer.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\EnvironmentLighting.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\AnimationSystem12.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="Threading\AtomicJobWorker.h"><Filter>Threading</Filter></ClInclude>
+    <ClInclude Include="Scene\Entity.h"><Filter>Scene</Filter></ClInclude>
+    <ClInclude Include="Scene\SceneRegistry.h"><Filter>Scene</Filter></ClInclude>
+    <ClInclude Include="Components\AnimationComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\AnimationControllerComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\CameraComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\DirectionalLightComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\ModelRendererComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\NameComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\PostProcessComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\PrefabComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\ReflectionFloorComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\RenderingSettingsComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\TransformComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="ThirdParty\ImGuizmo\ImGuizmo.h"><Filter>ThirdParty</Filter></ClInclude>
+    <ClInclude Include="imgui\imconfig.h"><Filter>ImGui</Filter></ClInclude>
+    <ClInclude Include="imgui\imgui.h"><Filter>ImGui</Filter></ClInclude>
+    <ClInclude Include="imgui\imgui_impl_dx12.h"><Filter>ImGui</Filter></ClInclude>
+    <ClInclude Include="imgui\imgui_impl_win32.h"><Filter>ImGui</Filter></ClInclude>
+    <ClInclude Include="imgui\imgui_internal.h"><Filter>ImGui</Filter></ClInclude>
+    <ClInclude Include="imgui\imstb_rectpack.h"><Filter>ImGui</Filter></ClInclude>
+    <ClInclude Include="imgui\imstb_textedit.h"><Filter>ImGui</Filter></ClInclude>
+    <ClInclude Include="imgui\imstb_truetype.h"><Filter>ImGui</Filter></ClInclude>
+    <ClInclude Include="WindowApplication.h"><Filter>Application</Filter></ClInclude>
+    <ClInclude Include="tinygltf-release\json.hpp"><Filter>ThirdParty</Filter></ClInclude>
+    <ClInclude Include="tinygltf-release\tiny_gltf.h"><Filter>ThirdParty</Filter></ClInclude>
   </ItemGroup>
   <ItemGroup>
-	<FxCompile Include="blur_ps.hlsl">
-	  <Filter>Shaders</Filter>
-	</FxCompile>
-	<FxCompile Include="fullscreen_quad_ps.hlsl">
-	  <Filter>Shaders</Filter>
-	</FxCompile>
-	<FxCompile Include="fullscreen_quad_vs.hlsl">
-	  <Filter>Shaders</Filter>
-	</FxCompile>
-	<FxCompile Include="luminance_extraction_ps.hlsl">
-	  <Filter>Shaders</Filter>
-	</FxCompile>
-	<FxCompile Include="gltf_model_ps.hlsl">
-	  <Filter>Shaders</Filter>
-	</FxCompile>
-	<FxCompile Include="gltf_model_vs.hlsl">
-	  <Filter>Shaders</Filter>
-	</FxCompile>
-    <None Include="sprite.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="geometric_primitive.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="static_mesh.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="skinned_mesh.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="sprite_vs.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="sprite_ps.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="geometric_primitive_vs.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="geometric_primitive_ps.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="static_mesh_ps.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="static_mesh_vs.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="skinned_mesh_ps.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="skinned_mesh_vs.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
+    <FxCompile Include="DirectX12\Shaders\GltfMeshMS.hlsl"><Filter>DirectX12\Shaders</Filter></FxCompile>
+    <None Include="COMPONENT_SYSTEM_GUIDE.md"><Filter>Documentation</Filter></None>
+    <None Include="DirectX12\TEAM_DEVELOPMENT_GUIDE.md"><Filter>Documentation</Filter></None>
+    <None Include="resources\environments\hilly_terrain_01_puresky\skybox.dds"><Filter>Resources</Filter></None>
+    <None Include="resources\environments\hilly_terrain_01_puresky\diffuse_iem.dds"><Filter>Resources</Filter></None>
+    <None Include="resources\environments\hilly_terrain_01_puresky\specular_pmrem.dds"><Filter>Resources</Filter></None>
+    <None Include="resources\environments\hilly_terrain_01_puresky\lut_ggx.dds"><Filter>Resources</Filter></None>
+    <None Include="resources\gltf\2CylinderEngine\2CylinderEngine.gltf"><Filter>Resources</Filter></None>
+    <None Include="resources\gltf\2CylinderEngine\2CylinderEngine0.bin"><Filter>Resources</Filter></None>
+    <None Include="resources\gltf\ConvertedCube004\cube.004.glb"><Filter>Resources</Filter></None>
+    <None Include="tinygltf-release\LICENSE"><Filter>ThirdParty</Filter></None>
+    <None Include="ShaderLibrary\Basic.hlsli"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\BasicPS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\BasicVS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\ColorFilterPS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\FullscreenQuad.hlsli"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\FullscreenQuadPS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\FullscreenQuadVS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\Lambert.hlsli"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\LambertPS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\LambertVS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\Phong.hlsli"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\PhongPS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\PhongVS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\PrimitiveRenderer.hlsli"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\PrimitiveRendererPS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\PrimitiveRendererVS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\Scene.hlsli"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\ShapeRenderer.hlsli"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\ShapeRendererPS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\ShapeRendererVS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\Skinning.hlsli"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\Sprite.hlsli"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\SpritePS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\SpriteVS.hlsl"><Filter>Shader Library\Common</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\common.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering_directional_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering_emissive_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering_indirect_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering_point_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering_spot_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\deferred_rendering.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\depth_of_field_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\depth_of_field.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\filter_functions.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\flat_shading_gs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\flow_brush_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gaussian_filtering_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gaussian_filtering.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gbuffer.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\geometric_primitive_object_data.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\geometric_primitive_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\geometric_primitive_vs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\geometric_primitive.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\geometry_particle_gs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\geometry_particle_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\geometry_particle_vs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\geometry_particle.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_cascade_shadowmap_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_outline_gs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_outline_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_outline.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_smake_rising.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_smoke_rising_gs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_smoke_rising_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_smoke_rising_vs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward_vs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_forward.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_gbuffer_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_gbuffer_vs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_gbuffer.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_object_data.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_shadow_caster_vs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model_shadow_caster.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\gltf_model.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\lights.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\luminance_extract_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\physical_based_rendering_functions.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\physical_based_rendering_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\physical_based_rendering_vs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\physical_based_rendering.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\ray_marching_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\sat_blur_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\scene_constant_buffer.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\sea_sprite_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\shading_functions.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\shading_models.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\sky_box_gbuffer_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\sky_box_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\sky_box_use_ibl_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\sky_box_vs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\sky_box.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\sprite_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\sprite_vs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\sprite.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\static_mesh_object_data.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\static_mesh_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\static_mesh_vs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\static_mesh.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\summed_area_table_x_cs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\summed_area_table_y_cs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\summed_area_table.hlsli"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\test_calculate_cs.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingII\volumetric_light_shaft_ps.hlsl"><Filter>Shader Library\Shader Programming II</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\chromatic_aberration_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\common.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_begin_frame_cs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_bitonic_sort_b2_cs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_bitonic_sort_c2_cs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_bitonic_sort.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_emit_cs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_end_frame_cs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_init_cs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_render_gs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_render_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_render_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_sort_cs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle_update_cs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\compute_particle.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting_indirect_inner_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting_indirect_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting_point_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting_spot_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_primitive_lighting.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_directional_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_emissive_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_indirect_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_indirect_ssao_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_point_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering_spot_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\deferred_rendering.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\displacement_mapping_ds.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\displacement_mapping_hs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\displacement_mapping_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\displacement_mapping_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\displacement_mapping.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\fast_approximate_anti_aliasing_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\filter_functions.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\final_pass_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer_decal_constant_buffer.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer_decal_primitive_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer_decal_primitive.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer_decal_sprite_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer_decal_sprite.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gbuffer.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\geometric_primitive_object_data.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\geometric_primitive_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\geometric_primitive_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\geometric_primitive.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\geometry_particle_gs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\geometry_particle_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\geometry_particle_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\geometry_particle.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_forward_instancing_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_forward_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_forward_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_forward.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_gbuffer_instancing_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_gbuffer_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_gbuffer_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_object_data.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_shadow_caster_instancing_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_shadow_caster_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model_shadow_caster.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\gltf_model.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\lights.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\motion_blur_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\motion_blur.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\pmx_model_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\pmx_model_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\pmx_model.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\radial_blur_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\sat_blur_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\scene_constant_buffer.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_ambient_occlusion_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_composite_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_ex_color_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_ex_composite_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_ex_uv_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_ex.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\screen_space_reflection.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\shading_functions.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\shading_models.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\sky_box_forward_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\sky_box_gbuffer_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\sky_box_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\sky_box.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\sprite_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\sprite_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\sprite.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\static_mesh_object_data.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\static_mesh_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\static_mesh_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\static_mesh.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\summed_area_table_x_cs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\summed_area_table_y_cs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\summed_area_table.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\terrain_grass_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive_ds.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive_gs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive_hs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\terrain_primitive.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\tessellation_primitive_ds.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\tessellation_primitive_hs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\tessellation_primitive_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\tessellation_primitive_vs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\tessellation_primitive.hlsli"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\test_calculate_cs.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\velocity_neighbor_max_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\velocity_tile_max_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+    <None Include="ShaderLibrary\ShaderProgrammingIII\vignette_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
   </ItemGroup>
 </Project>

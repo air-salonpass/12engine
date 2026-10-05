@@ -1,0 +1,61 @@
+# Jisaku Engine DirectX 12 チーム開発ガイド
+
+## 描画基盤の方針
+
+このエンジンではDirectX 12のDevice、Descriptor Heap、Command Queue、Command List、Fenceを描画基盤側で所有します。ゲーム実装側から生の`ID3D12Device`や`ID3D12CommandQueue`を直接操作せず、Rendererへ描画要求を登録してください。所有者を限定することで、チームメンバーごとに異なるリソース状態や同期方法が混ざることを防ぎます。
+
+Graphics、Compute、Copyの各Queueは独立しています。別Queueの結果を読む場合はGPU Fenceで順序を作ります。CPU側の`std::atomic`はGPU処理の完了を保証しないため、GPU同期の代わりには使えません。
+
+## CPUスレッドの制御
+
+スレッドの停止要求、実行中、ジョブ待機などの単純な状態は`std::atomic<bool>`で管理します。`volatile bool`はスレッド同期にならないため使用しません。
+
+複数の値をひとまとまりとして受け渡す場合はmutexを使います。たとえば、モデル本体とエラーメッセージを別々のatomic変数で公開すると、片方だけが新しい状態になる可能性があります。`std::atomic`は制御フラグ、mutexは複合データ、GPU FenceはGPU処理完了という役割に分けます。
+
+## フレームリソース
+
+CommandAllocator、動的Constant Buffer、スキニング出力、一時Render Targetはフレーム数分用意します。GPUが使用中のフレーム資源をCPUが上書きしてはいけません。該当フレームのFence完了を確認してからAllocatorをResetします。
+
+削除要求が来たGPUリソースは即座に破棄しません。最後に参照したFence値と一緒に遅延削除キューへ入れ、完了後に解放します。`shared_ptr`だけではGPU側の参照期間を表現できない点に注意してください。
+
+## 非同期モデルロード
+
+ファイル解析と画像デコードはCPUワーカーで行い、GPU転送はCopy Queueへ記録します。モデルをSceneへ公開する条件は、CPU解析の完了だけでなくCopy Fenceの完了と、描画用状態へのResource Barrier完了です。
+
+ロード中のアセットをゲームコードが参照する場合は、準備完了状態を必ず確認します。準備前は代替モデルを表示し、ゲームループを待機させない設計にします。
+
+起動時の標準モデルは`std::atomic`制御のワーカーで読み込みます。その並行時間にMain ThreadでIBLを準備し、最初のモデル描画より前に照明を完成させます。追加モデルのGPU ResourceやDescriptorは、完成した結果をmutexで一括して受け渡し、Main Threadのフレーム境界で公開します。
+
+IBLは元DDSの全Mipを一度メモリへ読むのではなく、Diffuse 128px、Specular／BRDF LUT 256px以下のMipだけをファイルから直接読みます。元教材ファイルは変更せず、起動時のI/OとGPU転送量を抑えます。
+
+## モデルとアニメーション
+
+静的モデルとスキンモデルを分け、スキンを持つモデルだけVertex ShaderまたはMesh Shaderで関節行列を適用します。CPU側で計算したEntityごとの姿勢は、通常描画と反射元のG-buffer描画で共有します。
+
+アニメーション時刻やTransformの更新はゲームスレッドで確定し、描画スレッドにはフレーム用のスナップショットを渡します。描画中のComponent配列をゲームスレッドから変更しないでください。
+
+## SSRとポストプロセス
+
+SSRはScene Color、Depth、NormalなどをSRVとして読みます。GBuffer描画後にRender Target状態からShader Resource状態へ遷移し、SSR出力後も次の用途へ合わせて状態を戻します。同じResourceをRTVとSRVとして同時に使用してはいけません。
+
+SceneビューとGameビューで同じ結果を使う場合、完成したScene Textureを共有します。Gizmoや選択枠はSceneビューだけへ合成し、Gameビューへ混ぜません。
+
+床は画面外で欠けない平面反射を標準とし、教材のSSRは切替可能なフォールバックとして保持します。平面反射はモデルを追加で一度描くため、低性能GPUではInspectorからSSRへ切り替えるか反射を無効化してください。
+
+## ImGuiとGizmo
+
+ImGuiは`imgui_impl_dx12`を使用し、フォント用SRVも共通のシェーダー可視Descriptor Heapから確保します。`ImTextureID`にはSRVのGPU Descriptor Handleを渡します。
+
+GizmoはCPU側でTransformを編集する機能なのでDirectX 12でも利用できます。Sceneビューの表示矩形と描画先Textureの解像度が異なる場合は、マウス座標を表示矩形へ合わせて変換します。
+
+## メッシュシェーダーと新機能
+
+起動時に`D3D12_FEATURE_D3D12_OPTIONS7`を確認し、Mesh Shader Tierが未対応なら通常のVertex Shader経路を使います。メッシュシェーダー専用アセットにも通常描画用のフォールバックを保持してください。
+
+現在のglTF Loaderは最大64頂点・126三角形単位のMeshletをCPUで生成し、対応環境では`DispatchMesh`で描画します。InspectorのRendering Settingsから機能を切り替えられます。BLENDまたはdouble-sided材質は描画互換性を優先し、通常Vertex Pipelineへ自動的に戻します。
+
+DXR、Variable Rate Shading、Bindlessも同様にFeature Supportを確認してから有効化します。開発PCで動いた機能を無条件にチーム全員の標準経路へしないことが重要です。
+
+## デバッグ
+
+Debug構成ではD3D12 Debug Layerを有効にします。GPU負荷やQueue間の待機はPIXまたはRenderDocで確認します。画面が止まる場合は、毎フレームの`WaitIdle`、Copy Queue待ち、Descriptor枯渇、同じCommandAllocatorの同時利用を最初に確認してください。

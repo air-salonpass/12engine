@@ -6,24 +6,14 @@ VS_OUT main(
 {
     VS_OUT vout;
 
-    vout.position =
-        mul(position,
-        mul(world, view_projection));
+	vout.position =
+		mul(position,
+		mul(world, view_projection));
+	normal.w = 0.0f;
+	vout.world_normal = normalize(mul(normal, world));
 
-    normal.w = 0;
-
-    float4 N =
-        normalize(mul(normal, world));
-
-    float4 L =
-        normalize(-light_direction);
-
-    vout.color.rgb =
-        material_color.rgb *
-        max(0, dot(L, N));
-
-    vout.color.a =
-        material_color.a;
+	// ライティングはピクセルシェーダーで一度だけ行い、床の上向き面も環境光で読める明るさを残す。
+	vout.color = material_color;
 
     return vout;
 }

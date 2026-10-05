@@ -36,7 +36,9 @@ cbuffer SCENE_CONSTANT_BUFFER : register(b1)
 	float4 camera_position;
 	// UNIT40: HDR由来の拡散・鏡面環境光へ共通で掛ける強度。
 	float ibl_intensity;
-	float3 scene_padding;
+	// 通常モデルは1.0、床へ重ねる鏡像は0～1の透過率を受け取る。
+	float reflection_alpha;
+	float2 scene_padding;
 };
 
 // UNIT37: CPUで計算した最大512関節のスキニング行列を頂点シェーダーへ渡す。

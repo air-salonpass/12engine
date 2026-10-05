@@ -1,6 +1,8 @@
 struct VS_OUT
 {
     float4 position : SV_POSITION;
+	// SSR用床を含む基本形状の面方向を、ピクセル単位の照明へ渡す。
+	float4 world_normal : NORMAL;
     float4 color : COLOR;
 };
 

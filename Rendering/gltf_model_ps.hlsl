@@ -148,5 +148,5 @@ float4 main(VS_OUT input) : SV_TARGET
 		emissive *= pow(saturate(
 			material_textures[EMISSIVE_TEXTURE].Sample(sampler_states[ANISOTROPIC], input.texcoord).rgb), 2.2);
 	}
-	return float4(color + emissive, basecolor.a);
+	return float4(color + emissive, basecolor.a * reflection_alpha);
 }
