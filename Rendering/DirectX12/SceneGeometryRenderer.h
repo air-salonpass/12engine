@@ -7,7 +7,7 @@
 #include <memory>
 #include <wrl.h>
 
-// エディター確認用の反射床など、モデル資産に属さない最小限のシーン形状を描画する。
+// モデル資産に属さない共通の床を描画する。モデルと同じ太陽光・影・手続き環境光を受ける。
 class scene_geometry_renderer12
 {
 public:
@@ -17,7 +17,8 @@ public:
 		const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection,
 		float floor_height, const DirectX::XMFLOAT3& color,
 		D3D12_GPU_DESCRIPTOR_HANDLE reflection, UINT target_width, UINT target_height,
-		float reflection_strength);
+		float reflection_strength, D3D12_GPU_VIRTUAL_ADDRESS lighting,
+		D3D12_GPU_DESCRIPTOR_HANDLE shadow, const DirectX::XMFLOAT3& camera_position);
 
 private:
 	struct vertex
@@ -32,6 +33,7 @@ private:
 		DirectX::XMFLOAT4X4 projection{};
 		DirectX::XMFLOAT4 color{ 0.16f, 0.18f, 0.22f, 1.0f };
 		DirectX::XMFLOAT4 render_parameters{}; // xy:描画サイズ、z:反射強度
+		DirectX::XMFLOAT4 camera_position{};
 	};
 
 	std::shared_ptr<directx12_device> device_;

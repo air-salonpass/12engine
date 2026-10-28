@@ -5,7 +5,7 @@ struct reflection_floor_component
 {
 	bool enabled = true;
 	bool reflection_enabled = true;
-	// 床では画面外の情報も映せる平面反射を標準とし、OFF時はShader IIIのSSRを使う。
+	// 床では画面外の情報も映せる平面反射を標準とし、OFF時は画面内の色と深度から反射を求めるSSRを使う。
 	bool planar_reflection = true;
 	float strength = 1.10f;
 	float max_distance = 15.0f;

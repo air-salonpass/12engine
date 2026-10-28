@@ -1,0 +1,35 @@
+{
+  "format": "JisakuEnginePrefab",
+  "entity": {
+    "name": "Floating_Marker",
+    "transform": {
+      "position": [
+        0,
+        1,
+        0
+      ],
+      "scale3": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    "model_renderer": {
+      "asset": "resources/samples/Models/FloatingMarker.gltf",
+      "visible": true
+    },
+    "gameplay_tag": "Stage",
+    "map_object": {
+      "layer": 0,
+      "grid_size": 1,
+      "static": false,
+      "snap_to_grid": true
+    }
+  },
+  "version": 1
+}

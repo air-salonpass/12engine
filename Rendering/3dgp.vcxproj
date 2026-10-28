@@ -92,7 +92,7 @@
       <PreprocessorDefinitions>USE_IMGUI;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/utf-8 /wd4828 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\cereal-master\include;$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -120,7 +120,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;USE_IMGUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/utf-8 /wd4828 %(AdditionalOptions)</AdditionalOptions>
-		<AdditionalIncludeDirectories>$(ProjectDir)\cereal-master\include;$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+		<AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -147,7 +147,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/utf-8 /wd4828 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\cereal-master\include;$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -176,7 +176,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/utf-8 /wd4828 %(AdditionalOptions)</AdditionalOptions>
-		<AdditionalIncludeDirectories>$(ProjectDir)\cereal-master\include;$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+		<AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(ProjectDir)\ThirdParty\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -195,6 +195,7 @@
   <ItemGroup>
 	<ClCompile Include="DirectX12\CommandQueue.cpp" />
 	<ClCompile Include="DirectX12\DescriptorAllocator.cpp" />
+	<ClCompile Include="DirectX12\FrameLimiter.cpp" />
 	<ClCompile Include="DirectX12\Device.cpp" />
 	<ClCompile Include="DirectX12\Renderer.cpp" />
 	<ClCompile Include="DirectX12\GltfModel.cpp" />
@@ -212,6 +213,9 @@
 	<ClCompile Include="DirectX12\AnimationSystem12.cpp" />
 	<ClCompile Include="DirectX12\TinyGltfImplementation.cpp" />
 	<ClCompile Include="Threading\AtomicJobWorker.cpp" />
+	<ClCompile Include="Systems\PhysicsSystem.cpp" />
+	<ClCompile Include="Systems\MapEditorSystem.cpp" />
+    <ClCompile Include="Systems\PlaytestSystem.cpp" />
 	<ClCompile Include="ThirdParty\ImGuizmo\ImGuizmo.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
     </ClCompile>
@@ -238,14 +242,21 @@
   <ItemGroup>
 	<ClInclude Include="DirectX12\CommandQueue.h" />
 	<ClInclude Include="DirectX12\DescriptorAllocator.h" />
+	<ClInclude Include="DirectX12\FrameResource.h" />
+	<ClInclude Include="DirectX12\FrameLimiter.h" />
+	<ClInclude Include="DirectX12\GraphicsConfig.h" />
 	<ClInclude Include="DirectX12\Device.h" />
 	<ClInclude Include="DirectX12\Renderer.h" />
 	<ClInclude Include="DirectX12\GltfModel.h" />
 	<ClInclude Include="DirectX12\GltfRenderer.h" />
+	<ClInclude Include="DirectX12\LightingFrame.h" />
+	<ClInclude Include="DirectX12\LightingShader.h" />
+	<ClInclude Include="DirectX12\SunShadowMap.h" />
 	<ClInclude Include="DirectX12\EditorImGui.h" />
 	<ClInclude Include="DirectX12\SceneRenderTarget.h" />
 	<ClInclude Include="DirectX12\ScreenSpaceReflection.h" />
 	<ClInclude Include="DirectX12\NativePreview.h" />
+    <ClInclude Include="DirectX12\EditorUiHelp.h" />
 	<ClInclude Include="DirectX12\EditorViewTarget.h" />
 	<ClInclude Include="DirectX12\ModelResourceManager.h" />
 	<ClInclude Include="DirectX12\SceneGeometryRenderer.h" />
@@ -258,15 +269,24 @@
 	<ClInclude Include="Components\AnimationComponent.h" />
 	<ClInclude Include="Components\AnimationControllerComponent.h" />
 	<ClInclude Include="Components\CameraComponent.h" />
+	<ClInclude Include="Components\CharacterControllerComponent.h" />
+	<ClInclude Include="Components\ColliderComponent.h" />
 	<ClInclude Include="Components\DirectionalLightComponent.h" />
+	<ClInclude Include="Components\GameplayTagComponent.h" />
+	<ClInclude Include="Components\MapObjectComponent.h" />
 	<ClInclude Include="Components\ModelRendererComponent.h" />
 	<ClInclude Include="Components\NameComponent.h" />
 	<ClInclude Include="Components\PostProcessComponent.h" />
 	<ClInclude Include="Components\PrefabComponent.h" />
 	<ClInclude Include="Components\ReflectionFloorComponent.h" />
 	<ClInclude Include="Components\RenderingSettingsComponent.h" />
+	<ClInclude Include="Components\RigidBodyComponent.h" />
 	<ClInclude Include="Components\TransformComponent.h" />
 	<ClInclude Include="ThirdParty\ImGuizmo\ImGuizmo.h" />
+	<ClInclude Include="Systems\PhysicsSystem.h" />
+	<ClInclude Include="Systems\MapEditorSystem.h" />
+    <ClInclude Include="Systems\PlaytestSystem.h" />
+    <ClInclude Include="Components\PlaytestControllerComponent.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
 	<ClInclude Include="imgui\imgui_impl_dx12.h" />
@@ -280,7 +300,11 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="COMPONENT_SYSTEM_GUIDE.md" />
+	<None Include="DirectX12\BEGINNER_IMPLEMENTATION_GUIDE.md" />
+	<None Include="DirectX12\TEAM_PRODUCTION_GAP_ANALYSIS.md" />
 	<None Include="DirectX12\TEAM_DEVELOPMENT_GUIDE.md" />
+	<None Include="Documentation\PHYSICS_GUIDE.md" />
+	<None Include="Documentation\MAP_EDITOR_GUIDE.md" />
 	<None Include="resources\environments\hilly_terrain_01_puresky\skybox.dds" />
 	<None Include="resources\environments\hilly_terrain_01_puresky\diffuse_iem.dds" />
 	<None Include="resources\environments\hilly_terrain_01_puresky\specular_pmrem.dds" />
@@ -507,4 +531,21 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ItemGroup>
+    <ClInclude Include="Networking\RoomHandshake.h" />
+    <ClInclude Include="Networking\ContentFingerprint.h" />
+    <ClInclude Include="Networking\ConfirmedEffects.h" />
+    <ClInclude Include="Networking\StateArchive.h" />
+    <ClInclude Include="Networking\ReplayEffects.h" />
+    <ClInclude Include="Networking\FrameHistory.h" />
+    <ClInclude Include="Networking\RollbackSession.h" />
+    <ClInclude Include="Networking\PeerChannel.h" />
+    <ClInclude Include="Networking\UdpTransport.h" />
+    <ClCompile Include="Networking\UdpTransport.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Networking\LanDiscovery.h" />
+    <ClInclude Include="Networking\ConnectionAddress.h" />
+    <ClInclude Include="Systems\MenuGamepadNavigation.h" />
+  </ItemGroup>
 </Project>

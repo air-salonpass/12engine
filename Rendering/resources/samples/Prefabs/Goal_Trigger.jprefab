@@ -1,0 +1,52 @@
+{
+  "format": "JisakuEnginePrefab",
+  "entity": {
+    "name": "Goal_Trigger",
+    "transform": {
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "scale3": [
+        2,
+        0.15,
+        2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    "model_renderer": {
+      "asset": "resources/samples/Models/Block_Green.gltf",
+      "visible": true
+    },
+    "gameplay_tag": "Goal",
+    "map_object": {
+      "layer": 0,
+      "grid_size": 1,
+      "static": false,
+      "snap_to_grid": true
+    },
+    "collider": {
+      "trigger": true,
+      "layer": 0,
+      "shape": 0,
+      "enabled": true,
+      "mask": 4294967295,
+      "center": [
+        0,
+        0.5,
+        0
+      ],
+      "half_extents": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "version": 1
+}

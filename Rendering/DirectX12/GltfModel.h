@@ -67,6 +67,7 @@ public:
 		int alpha_mode = 0; // 0: OPAQUE 1: MASK 2: BLEND
 		float alpha_cutoff = 0.5f;
 		bool double_sided = false;
+		bool procedural_stone = false;
 	};
 
 	struct mesh

@@ -1,6 +1,13 @@
 #include "Renderer.h"
 
 #include <algorithm>
+#include <chrono>
+
+directx12_renderer::~directx12_renderer()
+{
+	// GetFrameLatencyWaitableObjectで受け取ったHandleはアプリ側が閉じる。
+	if (frame_latency_waitable_) CloseHandle(frame_latency_waitable_);
+}
 
 bool directx12_renderer::initialize(HWND hwnd, UINT width, UINT height, bool enable_debug_layer)
 {
@@ -26,12 +33,15 @@ bool directx12_renderer::create_swap_chain(HWND hwnd)
 	desc.BufferCount = frame_count;
 	desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	desc.Scaling = DXGI_SCALING_STRETCH;
+	desc.Flags = graphics_config12::swap_chain_flags;
 
 	Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain1;
 	if (FAILED(device_->factory()->CreateSwapChainForHwnd(
 		device_->graphics_queue().get(), hwnd, &desc, nullptr, nullptr,
 		swap_chain1.GetAddressOf())) || FAILED(swap_chain1.As(&swap_chain_))) return false;
 	device_->factory()->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
+	if (SUCCEEDED(swap_chain_->SetMaximumFrameLatency(graphics_config12::maximum_frame_latency)))
+		frame_latency_waitable_ = swap_chain_->GetFrameLatencyWaitableObject();
 	frame_index_ = swap_chain_->GetCurrentBackBufferIndex();
 	return true;
 }
@@ -40,7 +50,7 @@ bool directx12_renderer::create_frame_resources()
 {
 	for (UINT index = 0; index < frame_count; ++index)
 	{
-		frame_resource& frame = frames_[index];
+		frame_resource12& frame = frames_[index];
 		if (!frame.rtv.valid()) frame.rtv = device_->rtv_descriptors().allocate();
 		if (!frame.rtv.valid() ||
 			FAILED(swap_chain_->GetBuffer(index, IID_PPV_ARGS(frame.back_buffer.GetAddressOf())))) return false;
@@ -91,7 +101,7 @@ ID3D12GraphicsCommandList* directx12_renderer::begin_frame(const float clear_col
 {
 	if (recording_) return nullptr;
 	frame_index_ = swap_chain_->GetCurrentBackBufferIndex();
-	frame_resource& frame = frames_[frame_index_];
+	frame_resource12& frame = frames_[frame_index_];
 	if (!device_->graphics_queue().wait(frame.fence_value) ||
 		FAILED(frame.command_allocator->Reset()) ||
 		FAILED(frame.command_list->Reset(frame.command_allocator.Get(), nullptr))) return nullptr;
@@ -112,7 +122,7 @@ ID3D12GraphicsCommandList* directx12_renderer::begin_frame(const float clear_col
 bool directx12_renderer::end_frame(bool vsync)
 {
 	if (!recording_) return false;
-	frame_resource& frame = frames_[frame_index_];
+	frame_resource12& frame = frames_[frame_index_];
 	transition(frame.command_list.Get(), frame.back_buffer.Get(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	if (FAILED(frame.command_list->Close())) return false;
@@ -152,7 +162,8 @@ bool directx12_renderer::resize(UINT width, UINT height)
 	release_size_dependent_resources();
 	width_ = width;
 	height_ = height;
-	if (FAILED(swap_chain_->ResizeBuffers(frame_count, width_, height_, color_format, 0))) return false;
+	if (FAILED(swap_chain_->ResizeBuffers(frame_count, width_, height_, color_format,
+		graphics_config12::swap_chain_flags))) return false;
 	frame_index_ = swap_chain_->GetCurrentBackBufferIndex();
 	return create_frame_resources() && create_depth_buffer();
 }
@@ -160,4 +171,11 @@ bool directx12_renderer::resize(UINT width, UINT height)
 void directx12_renderer::wait_idle()
 {
 	if (device_) device_->wait_idle();
+}
+
+void directx12_renderer::wait_for_frame_latency()
+{
+	if (!frame_latency_waitable_) return;
+	// ウィンドウが隠れた場合に永久停止しないよう、有限時間でMain Loopへ戻す。
+	WaitForSingleObjectEx(frame_latency_waitable_, graphics_config12::frame_latency_timeout_ms, TRUE);
 }

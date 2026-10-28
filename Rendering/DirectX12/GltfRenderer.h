@@ -3,6 +3,7 @@
 #include "GltfModel.h"
 #include "Renderer.h"
 #include "EnvironmentLighting.h"
+#include "LightingFrame.h"
 
 #include <cstddef>
 #include <memory>
@@ -19,13 +20,16 @@ public:
 	bool initialize(std::shared_ptr<directx12_device> device);
 	int initialization_error() const { return initialization_error_; }
 	void begin_frame(UINT frame_index);
+	// begin_frame直後に一度設定し、影・通常描画・反射で同じ照明を使う。
+	void set_lighting(const lighting_constants12& lighting, D3D12_GPU_DESCRIPTOR_HANDLE shadow);
+	D3D12_GPU_VIRTUAL_ADDRESS lighting_address() const { return lighting_address_; }
 	void render(ID3D12GraphicsCommandList* command_list, const gltf_model12& model,
 		const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4X4& view,
 		const DirectX::XMFLOAT4X4& projection,
 		const environment_lighting12* environment = nullptr, float ibl_intensity = 0.0f,
 		const std::vector<gltf_model12::node>* pose = nullptr,
 		DirectX::XMFLOAT3 light_direction = { 0.35f, 0.8f, -0.45f },
-		bool prefer_mesh_shader = true, bool force_double_sided = false);
+		bool prefer_mesh_shader = true, bool force_double_sided = false, bool depth_only = false);
 	bool mesh_shader_available() const { return mesh_shader_available_; }
 
 private:
@@ -35,6 +39,7 @@ private:
 	{
 		DirectX::XMFLOAT4X4 world{}, view{}, projection{};
 		DirectX::XMFLOAT4X4 inverse_view{};
+		DirectX::XMFLOAT4X4 normal_world{};
 		DirectX::XMFLOAT4 base_color_factor{ 1, 1, 1, 1 };
 		DirectX::XMFLOAT4 emissive_metallic{ 0, 0, 0, 1 };
 		DirectX::XMFLOAT4 roughness_flags{ 1, 0, 0, 0 };
@@ -52,13 +57,14 @@ private:
 		const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection,
 		const environment_lighting12* environment, float ibl_intensity,
 		const std::vector<gltf_model12::node>* pose, DirectX::XMFLOAT3 light_direction,
-		ID3D12GraphicsCommandList6* mesh_commands, bool prefer_mesh_shader, bool force_double_sided);
+		ID3D12GraphicsCommandList6* mesh_commands, bool prefer_mesh_shader, bool force_double_sided, bool depth_only);
 
 	std::shared_ptr<directx12_device> device_;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> root_signature_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> pipeline_state_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> double_sided_pipeline_state_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> alpha_pipeline_state_;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> shadow_pipeline_state_;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> mesh_root_signature_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> mesh_pipeline_state_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> mesh_double_sided_pipeline_state_;
@@ -70,4 +76,7 @@ private:
 	std::size_t upload_cursor_ = 0;
 	int initialization_error_ = 0;
 	bool mesh_shader_available_ = false;
+	D3D12_GPU_VIRTUAL_ADDRESS lighting_address_ = 0;
+	D3D12_GPU_VIRTUAL_ADDRESS default_joint_address_ = 0;
+	D3D12_GPU_DESCRIPTOR_HANDLE shadow_srv_{};
 };

@@ -1,4 +1,5 @@
 #include "Device.h"
+#include "GraphicsConfig.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -44,10 +45,14 @@ bool directx12_device::initialize(bool enable_debug_layer)
 		!copy_queue_.initialize(device_.Get(), D3D12_COMMAND_LIST_TYPE_COPY, L"Copy Queue")) return false;
 
 	// シェーダー可視ヒープは種類ごとに1つだけ設定できるため、ゲーム全体で共有する。
-	if (!shader_descriptors_.initialize(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 65536, true) ||
-		!sampler_descriptors_.initialize(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 2048, true) ||
-		!rtv_descriptors_.initialize(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2048, false) ||
-		!dsv_descriptors_.initialize(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1024, false)) return false;
+	if (!shader_descriptors_.initialize(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		graphics_config12::shader_descriptor_count, true) ||
+		!sampler_descriptors_.initialize(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
+			graphics_config12::sampler_descriptor_count, true) ||
+		!rtv_descriptors_.initialize(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+			graphics_config12::rtv_descriptor_count, false) ||
+		!dsv_descriptors_.initialize(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
+			graphics_config12::dsv_descriptor_count, false)) return false;
 
 	D3D12_FEATURE_DATA_D3D12_OPTIONS options{};
 	if (SUCCEEDED(device_->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(options))))

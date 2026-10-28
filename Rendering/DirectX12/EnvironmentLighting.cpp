@@ -54,7 +54,7 @@ bool environment_lighting12::initialize(std::shared_ptr<directx12_device> device
 	device_ = std::move(device);
 	if (!device_) return false;
 	// IEMは拡散反射、PMREMは粗さ別鏡面反射、LUTはBRDF積分項として使用する。
-	// 元教材の1024px RGBA16Fは合計約145MBある。実用解像度のMipだけを直接読み、起動時転送を約6MBへ抑える。
+	// 1024px RGBA16Fの環境画像一式は合計約145MBある。実用解像度のMipだけを直接読み、起動時転送を約6MBへ抑える。
 	return load_rgba16f_dds(directory / L"diffuse_iem.dds", true, 128, diffuse_) &&
 		load_rgba16f_dds(directory / L"specular_pmrem.dds", true, 256, specular_) &&
 		load_rgba16f_dds(directory / L"lut_ggx.dds", false, 256, lut_);

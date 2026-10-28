@@ -15,7 +15,7 @@ struct descriptor_handle
 	bool valid() const noexcept { return index != UINT32_MAX; }
 };
 
-// ひとつのシェーダー可視ヒープを共有し、教材の方針どおり全SRV/CBV/UAVを同じ場所から払い出す。
+// GPUから参照できるDescriptor Heapを共有し、Textureや定数Bufferの参照枠を同じ場所から確保する。
 // DescriptorはGPUが最後に参照したFenceの完了前にreleaseして再利用しないこと。
 // 大量の一時Descriptorが必要な機能は、永続Asset用とフレーム一時用の寿命を分けて設計する。
 class descriptor_allocator

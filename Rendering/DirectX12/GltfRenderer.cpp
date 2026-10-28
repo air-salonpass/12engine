@@ -1,10 +1,12 @@
 #include "GltfRenderer.h"
+#include "LightingShader.h"
 
 #include <algorithm>
 #include <cstring>
 #include <d3dcompiler.h>
 #include <filesystem>
 #include <fstream>
+#include <string>
 #include <vector>
 
 #pragma comment(lib, "d3dcompiler.lib")
@@ -14,10 +16,11 @@ using namespace DirectX;
 
 namespace
 {
-	constexpr const char* shader_source = R"(
+	const std::string shader_source = std::string(lighting_shader_source12) + R"(
 cbuffer SceneConstants : register(b0) {
  row_major float4x4 world; row_major float4x4 view; row_major float4x4 projection;
  row_major float4x4 inverse_view;
+ row_major float4x4 normal_world;
  float4 base_color_factor; float4 emissive_metallic; float4 roughness_flags;
  uint skinned; float3 scene_padding;
  float4 environment_parameters;
@@ -32,27 +35,56 @@ SamplerState environment_sampler:register(s1);
 struct VSInput { float3 position:POSITION; float3 normal:NORMAL; float4 tangent:TANGENT;
  float2 texcoord:TEXCOORD; uint4 joints:JOINTS; float4 weights:WEIGHTS; };
 struct VSOutput { float4 position:SV_POSITION; float3 normal:NORMAL; float3 tangent:TANGENT;
- float tangent_sign:TANGENT1; float2 uv:TEXCOORD; float3 view_position:TEXCOORD1; };
+ float tangent_sign:TANGENT1; float2 uv:TEXCOORD; float3 view_position:TEXCOORD1; float3 world_position:TEXCOORD2; };
 struct PSOutput { float4 color:SV_TARGET0; float4 normal:SV_TARGET1; };
 VSOutput VSMain(VSInput input) {
- float4 p=float4(input.position,1); float3 n=input.normal;
+ float4 p=float4(input.position,1); float3 n=input.normal; float3 t=input.tangent.xyz;
  if(skinned!=0) { float4x4 s=joint_matrices[input.joints.x]*input.weights.x;
   s+=joint_matrices[input.joints.y]*input.weights.y; s+=joint_matrices[input.joints.z]*input.weights.z;
-  s+=joint_matrices[input.joints.w]*input.weights.w; p=mul(p,s); n=mul(n,(float3x3)s); }
+  s+=joint_matrices[input.joints.w]*input.weights.w; p=mul(p,s); n=mul(n,(float3x3)s); t=mul(t,(float3x3)s); }
  float4 wp=mul(p,world); float4 vp=mul(wp,view); VSOutput o; o.position=mul(vp,projection);
- o.normal=normalize(mul(mul(n,(float3x3)world),(float3x3)view));
- o.tangent=normalize(mul(mul(input.tangent.xyz,(float3x3)world),(float3x3)view));
- o.tangent_sign=input.tangent.w; o.uv=input.texcoord; o.view_position=vp.xyz; return o;
+ // 法線は逆転置行列で変換する。壁などの非一様Scaleで照明が歪むことを防ぐ。
+ o.normal=normalize(mul(mul(n,(float3x3)normal_world),(float3x3)view));
+ o.tangent=mul(mul(t,(float3x3)world),(float3x3)view);
+ o.tangent_sign=input.tangent.w*(determinant((float3x3)world)<0?-1:1); o.uv=input.texcoord;
+ o.view_position=vp.xyz; o.world_position=wp.xyz; return o;
 }
-PSOutput PSMain(VSOutput input) {
+// 影用には色を出力せず、MASK材質の穴だけを通常表示と同じAlpha Cutoffで判定する。
+void PSShadow(VSOutput input) {
+ if((uint)roughness_flags.z==1) {
+  float alpha=base_color_factor.a;
+  if(((uint)roughness_flags.y&1)!=0) alpha*=base_color_texture.Sample(material_sampler,input.uv).a;
+  clip(alpha-roughness_flags.w);
+ }
+}
+float stone_hash(float3 p) { return frac(sin(dot(p,float3(127.1,311.7,74.7)))*43758.5453); }
+float stone_noise(float3 p) {
+ float3 cell=floor(p); float3 f=frac(p); f=f*f*(3-2*f);
+ float a=lerp(stone_hash(cell),stone_hash(cell+float3(1,0,0)),f.x);
+ float b=lerp(stone_hash(cell+float3(0,1,0)),stone_hash(cell+float3(1,1,0)),f.x);
+ float c=lerp(stone_hash(cell+float3(0,0,1)),stone_hash(cell+float3(1,0,1)),f.x);
+ float d=lerp(stone_hash(cell+float3(0,1,1)),stone_hash(cell+float3(1,1,1)),f.x);
+ return lerp(lerp(a,b,f.y),lerp(c,d,f.y),f.z);
+}
+PSOutput PSMain(VSOutput input, bool front_face:SV_IsFrontFace) {
  uint flags=(uint)roughness_flags.y; float4 base=base_color_factor;
  if((flags&1)!=0) { float4 tex=base_color_texture.Sample(material_sampler,input.uv); base*=float4(pow(tex.rgb,2.2),tex.a); }
  if((uint)roughness_flags.z==1 && base.a<roughness_flags.w) discard;
  float metallic=emissive_metallic.w; float roughness=roughness_flags.x;
  if((flags&2)!=0) { float4 mr=metallic_roughness_texture.Sample(material_sampler,input.uv); metallic*=mr.b; roughness*=mr.g; }
+ // 石材だけに微細な色と粗さの差を加える。一般のアート材質は変更しない。
+ if((flags&64)!=0) {
+  float grain=stone_noise(input.world_position*7.0);
+  float coarse=stone_noise(input.world_position*1.7);
+  float detail_fade=saturate(1-length(fwidth(input.world_position))*10);
+  base.rgb*=lerp(0.88,1.10,coarse)*lerp(1,lerp(0.9,1.08,grain),detail_fade);
+  roughness=saturate(roughness+(grain-0.5)*0.12);
+ }
+ roughness=clamp(roughness,0.045,1); metallic=saturate(metallic);
  float3 n=normalize(input.normal);
  if((flags&4)!=0) { float3 t=normalize(input.tangent-n*dot(n,input.tangent)); float3 b=cross(n,t)*input.tangent_sign;
   float3 map=normal_texture.Sample(material_sampler,input.uv).xyz*2-1; n=normalize(map.x*t+map.y*b+map.z*n); }
+ if(!front_face && scene_padding.y>0.5) n=-n;
  float ao=(flags&8)!=0?occlusion_texture.Sample(material_sampler,input.uv).r:1;
  float3 emissive=emissive_metallic.rgb;
  if((flags&16)!=0) emissive*=pow(emissive_texture.Sample(material_sampler,input.uv).rgb,2.2);
@@ -64,21 +96,24 @@ PSOutput PSMain(VSOutput input) {
  float k=(roughness+1)*(roughness+1)/8; float geometry=(nv/(nv*(1-k)+k))*(nl/(nl*(1-k)+k));
  float3 f0=lerp(float3(0.04,0.04,0.04),base.rgb,metallic); float3 fresnel=f0+(1-f0)*pow(1-vh,5);
  float3 specular=d*geometry*fresnel/max(4*nv*nl,0.001); float3 diffuse=(1-fresnel)*(1-metallic)*base.rgb/3.14159265;
- // IBLの非同期ロード中も暗転しないよう、控えめな仮環境光を常に用意する。
- float3 fallback_ambient=base.rgb*0.22*ao; float3 ambient=fallback_ambient;
+ // 空と地面からの間接光を、面の向きと粗さに応じて近似する。外部HDRIが無くても金属が黒くならない。
+ float3 n_world=normalize(mul(n,(float3x3)inverse_view));
+ float3 reflection_world=normalize(mul(reflect(-v,n),(float3x3)inverse_view));
+ float3 rough_fresnel=f0+(max(float3(1-roughness,1-roughness,1-roughness),f0)-f0)*pow(1-nv,5);
+ float3 kd=(1-rough_fresnel)*(1-metallic);
+ float3 ambient=(kd*base.rgb*procedural_environment(n_world)+
+  procedural_environment(reflection_world)*rough_fresnel*lerp(0.9,0.35,roughness))*ao;
  if(environment_parameters.z>0.5) {
-  float3 n_world=normalize(mul(n,(float3x3)inverse_view));
-  float3 reflection_world=normalize(mul(reflect(-v,n),(float3x3)inverse_view));
-  float3 rough_fresnel=f0+(max(float3(1-roughness,1-roughness,1-roughness),f0)-f0)*pow(1-nv,5);
-  float3 kd=(1-rough_fresnel)*(1-metallic);
   float3 irradiance=diffuse_iem.SampleLevel(environment_sampler,n_world,0).rgb;
   float mip_level=roughness*max(environment_parameters.y-1,0);
   float3 prefiltered=specular_pmrem.SampleLevel(environment_sampler,reflection_world,mip_level).rgb;
   float2 brdf=brdf_lut.SampleLevel(environment_sampler,float2(nv,roughness),0).rg;
   float3 ibl=(kd*base.rgb*irradiance+prefiltered*(rough_fresnel*brdf.x+brdf.y))*ao*environment_parameters.x;
-  ambient=lerp(fallback_ambient,ibl,saturate(environment_parameters.w));
+  ambient+=ibl;
  }
- float3 color=(diffuse+specular)*nl*step(0.0001,light_length)+ambient+emissive;
+ float shadow=scene_padding.x>0.5?1:sunlight_visibility(input.world_position,n_world);
+ float3 color=(diffuse+specular)*nl*sun_color_intensity.rgb*sun_color_intensity.a*shadow+
+  ambient+emissive;
  PSOutput o; o.color=float4(color,base.a); o.normal=float4(n*0.5+0.5,1); return o;
 })";
 
@@ -91,7 +126,7 @@ PSOutput PSMain(VSOutput input) {
 #else
 			D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #endif
-		return SUCCEEDED(D3DCompile(shader_source, std::strlen(shader_source), "GltfRenderer12", nullptr,
+		return SUCCEEDED(D3DCompile(shader_source.c_str(), shader_source.size(), "GltfRenderer12", nullptr,
 			nullptr, entry, target, flags, 0, bytecode.GetAddressOf(), errors.GetAddressOf()));
 	}
 	std::size_t align_cb(std::size_t bytes) { return (bytes + 255u) & ~std::size_t(255u); }
@@ -145,7 +180,7 @@ bool gltf_renderer12::initialize(std::shared_ptr<directx12_device> device)
 	initialization_error_ = 0;
 	device_ = std::move(device);
 	if (!device_) { initialization_error_ = 1; return false; }
-	D3D12_ROOT_PARAMETER parameters[10]{};
+	D3D12_ROOT_PARAMETER parameters[12]{};
 	for (UINT index = 0; index < 2; ++index) {
 		parameters[index].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 		parameters[index].Descriptor.ShaderRegister = index;
@@ -165,7 +200,18 @@ bool gltf_renderer12::initialize(std::shared_ptr<directx12_device> device)
 		parameters[index + 2].DescriptorTable.pDescriptorRanges = &texture_ranges[index];
 		parameters[index + 2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	}
-	D3D12_STATIC_SAMPLER_DESC samplers[2]{};
+	// t12はMeshlet用t8～t11と重ならない位置へ置く。b2はモデルと床で共有する照明定数。
+	D3D12_DESCRIPTOR_RANGE shadow_range{};
+	shadow_range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	shadow_range.NumDescriptors = 1; shadow_range.BaseShaderRegister = 12;
+	parameters[10].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	parameters[10].DescriptorTable.NumDescriptorRanges = 1;
+	parameters[10].DescriptorTable.pDescriptorRanges = &shadow_range;
+	parameters[10].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	parameters[11].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	parameters[11].Descriptor.ShaderRegister = 2;
+	parameters[11].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	D3D12_STATIC_SAMPLER_DESC samplers[3]{};
 	samplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 	samplers[0].AddressU = samplers[0].AddressV = samplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	samplers[0].MaxLOD = D3D12_FLOAT32_MAX;
@@ -174,6 +220,9 @@ bool gltf_renderer12::initialize(std::shared_ptr<directx12_device> device)
 	samplers[1] = samplers[0];
 	samplers[1].AddressU = samplers[1].AddressV = samplers[1].AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
 	samplers[1].ShaderRegister = 1;
+	samplers[2] = samplers[1];
+	samplers[2].Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+	samplers[2].ShaderRegister = 2;
 	D3D12_ROOT_SIGNATURE_DESC root_desc{};
 	root_desc.NumParameters = _countof(parameters); root_desc.pParameters = parameters;
 	root_desc.NumStaticSamplers = _countof(samplers); root_desc.pStaticSamplers = samplers;
@@ -204,7 +253,8 @@ bool gltf_renderer12::initialize(std::shared_ptr<directx12_device> device)
 	pipeline.RTVFormats[1]=DXGI_FORMAT_R16G16B16A16_FLOAT;
 	pipeline.SampleDesc.Count=1; pipeline.SampleMask=UINT_MAX;
 	pipeline.RasterizerState.FillMode=D3D12_FILL_MODE_SOLID; pipeline.RasterizerState.CullMode=D3D12_CULL_MODE_BACK;
-	pipeline.RasterizerState.FrontCounterClockwise=TRUE; pipeline.RasterizerState.DepthClipEnable=TRUE;
+	// LHカメラの投影後の向きに合わせる。逆だと閉じたモデルの内側を描いて材質が不自然になる。
+	pipeline.RasterizerState.FrontCounterClockwise=FALSE; pipeline.RasterizerState.DepthClipEnable=TRUE;
 	pipeline.BlendState.RenderTarget[0].RenderTargetWriteMask=D3D12_COLOR_WRITE_ENABLE_ALL;
 	pipeline.BlendState.RenderTarget[1].RenderTargetWriteMask=D3D12_COLOR_WRITE_ENABLE_ALL;
 	pipeline.DepthStencilState.DepthEnable=TRUE; pipeline.DepthStencilState.DepthWriteMask=D3D12_DEPTH_WRITE_MASK_ALL;
@@ -225,11 +275,25 @@ bool gltf_renderer12::initialize(std::shared_ptr<directx12_device> device)
 	pipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	if (FAILED(device_->get()->CreateGraphicsPipelineState(&pipeline,
 		IID_PPV_ARGS(alpha_pipeline_state_.GetAddressOf())))) { initialization_error_ = 10; return false; }
+	// 深度専用PSOは通常頂点経路を使うため、Mesh Shader非対応GPUでも同じ影を描ける。
+	ComPtr<ID3DBlob> shadow_ps;
+	if (!compile_shader("PSShadow", "ps_5_1", shadow_ps)) { initialization_error_ = 11; return false; }
+	auto shadow_pipeline = pipeline;
+	shadow_pipeline.PS = { shadow_ps->GetBufferPointer(), shadow_ps->GetBufferSize() };
+	shadow_pipeline.NumRenderTargets = 0;
+	for (auto& format : shadow_pipeline.RTVFormats) format = DXGI_FORMAT_UNKNOWN;
+	shadow_pipeline.BlendState = {};
+	shadow_pipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	shadow_pipeline.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	shadow_pipeline.RasterizerState.DepthBias = 800;
+	shadow_pipeline.RasterizerState.SlopeScaledDepthBias = 1.5f;
+	if (FAILED(device_->get()->CreateGraphicsPipelineState(&shadow_pipeline,
+		IID_PPV_ARGS(shadow_pipeline_state_.GetAddressOf())))) { initialization_error_ = 12; return false; }
 
 	// Mesh Shaderは任意機能として構築する。非対応GPUや古いドライバーでは通常PSOをそのまま使う。
 	if (device_->supported_features().mesh_shader != D3D12_MESH_SHADER_TIER_NOT_SUPPORTED)
 	{
-		D3D12_ROOT_PARAMETER mesh_parameters[14]{};
+		D3D12_ROOT_PARAMETER mesh_parameters[16]{};
 		for (UINT index = 0; index < 2; ++index)
 		{
 			mesh_parameters[index].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -249,6 +313,8 @@ bool gltf_renderer12::initialize(std::shared_ptr<directx12_device> device)
 			mesh_parameters[index + 2].ShaderVisibility = index < 8 ?
 				D3D12_SHADER_VISIBILITY_PIXEL : D3D12_SHADER_VISIBILITY_MESH;
 		}
+		mesh_parameters[14] = parameters[10];
+		mesh_parameters[15] = parameters[11];
 		D3D12_ROOT_SIGNATURE_DESC mesh_root_desc{};
 		mesh_root_desc.NumParameters = _countof(mesh_parameters);
 		mesh_root_desc.pParameters = mesh_parameters;
@@ -366,6 +432,17 @@ bool gltf_renderer12::create_fallback_texture()
 void gltf_renderer12::begin_frame(UINT frame_index)
 {
 	frame_offset_=(frame_index%directx12_renderer::frame_count)*upload_bytes_per_frame; upload_cursor_=0;
+	// 静的な床・壁ごとに256関節分の定数を複製しない。フレーム内で不変の単位行列を共有する。
+	// 多数のマップ部品でもUpload領域を使い切らず、フレームごとのFence管理はそのまま保つ。
+	joint_constants identity{};
+	for (auto& matrix : identity.matrices) XMStoreFloat4x4(&matrix,XMMatrixIdentity());
+	default_joint_address_ = upload(&identity,sizeof(identity));
+}
+
+void gltf_renderer12::set_lighting(const lighting_constants12& lighting, D3D12_GPU_DESCRIPTOR_HANDLE shadow)
+{
+	lighting_address_ = upload(&lighting, sizeof(lighting));
+	shadow_srv_ = shadow;
 }
 
 D3D12_GPU_VIRTUAL_ADDRESS gltf_renderer12::upload(const void* data, std::size_t bytes)
@@ -380,13 +457,13 @@ void gltf_renderer12::render(ID3D12GraphicsCommandList* command_list,const gltf_
 	const XMFLOAT4X4& world,const XMFLOAT4X4& view,const XMFLOAT4X4& projection,
 	const environment_lighting12* environment,float ibl_intensity,
 	const std::vector<gltf_model12::node>* pose,XMFLOAT3 light_direction,bool prefer_mesh_shader,
-	bool force_double_sided)
+	bool force_double_sided, bool depth_only)
 {
 	if(!command_list||!model.loaded()) return;
 	ID3D12DescriptorHeap* heaps[]{ device_->shader_descriptors().heap() };
 	command_list->SetDescriptorHeaps(1, heaps);
 	ComPtr<ID3D12GraphicsCommandList6> mesh_commands;
-	if (mesh_shader_available_ && prefer_mesh_shader)
+	if (mesh_shader_available_ && prefer_mesh_shader && !depth_only)
 		command_list->QueryInterface(IID_PPV_ARGS(mesh_commands.GetAddressOf()));
 	// 環境が未ロードなら白Textureを束縛し、Shader側のフラグでIBL参照を止める。
 	const bool has_environment = environment && environment->valid();
@@ -395,14 +472,14 @@ void gltf_renderer12::render(ID3D12GraphicsCommandList* command_list,const gltf_
 	for(std::size_t i=0;i<nodes.size();++i) if(nodes[i].parent<0)
 		draw_node(command_list,model,static_cast<int>(i),world,view,projection,
 			has_environment ? environment : nullptr,ibl_intensity,pose,light_direction,
-			mesh_commands.Get(),prefer_mesh_shader,force_double_sided);
+			mesh_commands.Get(),prefer_mesh_shader,force_double_sided,depth_only);
 }
 
 void gltf_renderer12::draw_node(ID3D12GraphicsCommandList* command_list,const gltf_model12& model,int node_index,
 	const XMFLOAT4X4& world,const XMFLOAT4X4& view,const XMFLOAT4X4& projection,
 	const environment_lighting12* environment,float ibl_intensity,
 	const std::vector<gltf_model12::node>* pose,XMFLOAT3 light_direction,
-	ID3D12GraphicsCommandList6* mesh_commands,bool prefer_mesh_shader,bool force_double_sided)
+	ID3D12GraphicsCommandList6* mesh_commands,bool prefer_mesh_shader,bool force_double_sided,bool depth_only)
 {
 	const auto& nodes = pose && pose->size() == model.nodes().size() ? *pose : model.nodes();
 	const auto& node=nodes.at(node_index);
@@ -410,6 +487,8 @@ void gltf_renderer12::draw_node(ID3D12GraphicsCommandList* command_list,const gl
 		scene_constants constants{}; const bool skinned=node.skin>=0&&node.skin<static_cast<int>(model.skins().size());
 		XMStoreFloat4x4(&constants.world,skinned?XMLoadFloat4x4(&world):XMLoadFloat4x4(&node.global_transform)*XMLoadFloat4x4(&world));
 		constants.view=view; constants.projection=projection; constants.skinned=skinned?1u:0u;
+		XMStoreFloat4x4(&constants.normal_world, XMMatrixTranspose(XMMatrixInverse(nullptr, XMLoadFloat4x4(&constants.world))));
+		constants.padding[0] = force_double_sided ? 1.0f : 0.0f;
 		// ビュー空間で計算した法線・反射方向をCubeMap用のワールド空間へ戻す。
 		XMStoreFloat4x4(&constants.inverse_view, XMMatrixInverse(nullptr, XMLoadFloat4x4(&view)));
 		constants.environment_parameters = {
@@ -418,10 +497,14 @@ void gltf_renderer12::draw_node(ID3D12GraphicsCommandList* command_list,const gl
 			environment ? 1.0f : 0.0f, environment ? 1.0f : 0.0f };
 		XMVECTOR light = XMVector3Normalize(XMVector3TransformNormal(XMLoadFloat3(&light_direction), XMLoadFloat4x4(&view)));
 		XMStoreFloat4(&constants.light_direction, XMVectorSetW(light, 0.0f));
-		joint_constants joints{}; for(auto& matrix:joints.matrices) XMStoreFloat4x4(&matrix,XMMatrixIdentity());
-		if(skinned) { std::vector<XMFLOAT4X4> matrices; model.build_joint_matrices(node.skin,matrices,pose);
-			std::copy_n(matrices.begin(),(std::min)(matrices.size(),max_joints),joints.matrices); }
-		const auto joint_address=upload(&joints,sizeof(joints));
+		auto joint_address=default_joint_address_;
+		if(skinned) {
+			joint_constants joints{};
+			for(auto& matrix:joints.matrices) XMStoreFloat4x4(&matrix,XMMatrixIdentity());
+			std::vector<XMFLOAT4X4> matrices; model.build_joint_matrices(node.skin,matrices,pose);
+			std::copy_n(matrices.begin(),(std::min)(matrices.size(),max_joints),joints.matrices);
+			joint_address=upload(&joints,sizeof(joints));
+		}
 		if(!joint_address) return;
 		for(const auto& primitive:model.meshes()[node.mesh].primitives) {
 			const gltf_model12::material* material = primitive.material >= 0 &&
@@ -441,6 +524,10 @@ void gltf_renderer12::draw_node(ID3D12GraphicsCommandList* command_list,const gl
 				constants.roughness_flags.z = static_cast<float>(material->alpha_mode);
 				constants.roughness_flags.w = material->alpha_cutoff;
 			}
+			// 鏡像はカリング回避のため両面で描くが、材質そのものの裏面とは区別する。
+			constants.padding[1] = material && material->double_sided && !force_double_sided ? 1.0f : 0.0f;
+			// 半透明のガラス等を不透明な影として焼き込まない。透過影は今後の専用処理で扱う。
+			if (depth_only && material && material->alpha_mode == 2) continue;
 			D3D12_GPU_DESCRIPTOR_HANDLE texture_handles[5]{};
 			for (UINT texture_slot = 0; texture_slot < 5; ++texture_slot)
 			{
@@ -450,12 +537,13 @@ void gltf_renderer12::draw_node(ID3D12GraphicsCommandList* command_list,const gl
 				texture_handles[texture_slot] = handle;
 			}
 			constants.roughness_flags.y = static_cast<float>(flags);
+			if (material && material->procedural_stone) constants.roughness_flags.y=static_cast<float>(flags|64u);
 			const auto scene_address=upload(&constants,sizeof(constants));
 			if(!scene_address) return;
-			const bool use_mesh = prefer_mesh_shader && mesh_commands && primitive.meshlet_count > 0 &&
+			const bool use_mesh = !depth_only && prefer_mesh_shader && mesh_commands && primitive.meshlet_count > 0 &&
 				(!material || material->alpha_mode != 2);
 			command_list->SetGraphicsRootSignature(use_mesh ? mesh_root_signature_.Get() : root_signature_.Get());
-			command_list->SetPipelineState(use_mesh ?
+			command_list->SetPipelineState(depth_only ? shadow_pipeline_state_.Get() : use_mesh ?
 				(force_double_sided || (material && material->double_sided) ? mesh_double_sided_pipeline_state_.Get() : mesh_pipeline_state_.Get()) :
 				(material && material->alpha_mode == 2 ? alpha_pipeline_state_.Get() :
 					(force_double_sided || (material && material->double_sided) ? double_sided_pipeline_state_.Get() : pipeline_state_.Get())));
@@ -466,6 +554,8 @@ void gltf_renderer12::draw_node(ID3D12GraphicsCommandList* command_list,const gl
 			command_list->SetGraphicsRootDescriptorTable(7, environment ? environment->diffuse_srv() : fallback_srv_.gpu);
 			command_list->SetGraphicsRootDescriptorTable(8, environment ? environment->specular_srv() : fallback_srv_.gpu);
 			command_list->SetGraphicsRootDescriptorTable(9, environment ? environment->lut_srv() : fallback_srv_.gpu);
+			command_list->SetGraphicsRootDescriptorTable(use_mesh ? 14 : 10, depth_only ? fallback_srv_.gpu : shadow_srv_);
+			command_list->SetGraphicsRootConstantBufferView(use_mesh ? 15 : 11, lighting_address_);
 			if (use_mesh)
 			{
 				command_list->SetGraphicsRootDescriptorTable(10, primitive.vertex_srv.gpu);
@@ -483,5 +573,5 @@ void gltf_renderer12::draw_node(ID3D12GraphicsCommandList* command_list,const gl
 		}
 	}
 	for(int child:node.children) draw_node(command_list,model,child,world,view,projection,environment,ibl_intensity,pose,
-		light_direction,mesh_commands,prefer_mesh_shader,force_double_sided);
+		light_direction,mesh_commands,prefer_mesh_shader,force_double_sided,depth_only);
 }

@@ -1,0 +1,69 @@
+{
+  "entity": {
+    "name": "Player_Tester",
+    "transform": {
+      "position": [
+        0,
+        0.15,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale3": [
+        0.65,
+        1.7,
+        0.65
+      ]
+    },
+    "model_renderer": {
+      "visible": true,
+      "asset": "resources/samples/StageKit/Models/PlayerMarker.gltf"
+    },
+    "map_object": {
+      "static": false,
+      "layer": 0,
+      "snap_to_grid": true,
+      "grid_size": 0.5
+    },
+    "gameplay_tag": "Player",
+    "collider": {
+      "shape": 0,
+      "enabled": true,
+      "mask": 4294967295,
+      "layer": 0,
+      "center": [
+        0,
+        0.5,
+        0
+      ],
+      "half_extents": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "trigger": false
+    },
+    "character_controller": {
+      "enabled": true,
+      "slope_limit": 50,
+      "jump_speed": 7,
+      "step_height": 0.45,
+      "gravity": 19.6
+    },
+    "playtest_controller": {
+      "first_person": true,
+      "move_speed": 5,
+      "field_of_view": 75,
+      "sprint_multiplier": 1.8,
+      "mouse_sensitivity": 0.12,
+      "eye_height": 1.55,
+      "camera_distance": 7,
+      "respawn_height": -6
+    }
+  },
+  "version": 1,
+  "format": "JisakuEnginePrefab"
+}

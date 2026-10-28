@@ -1,0 +1,393 @@
+{
+  "format": "JisakuEngineScene",
+  "entities": [
+    {
+      "camera": {
+        "fov": 55,
+        "active": true,
+        "pitch": 35,
+        "target": [
+          0,
+          1.5,
+          0
+        ],
+        "yaw": 25,
+        "distance": 16
+      },
+      "name": "Main Camera"
+    },
+    {
+      "directional_light": {
+        "direction": [
+          0.35,
+          0.8,
+          -0.45
+        ],
+        "enabled": true
+      },
+      "name": "Directional Light"
+    },
+    {
+      "reflection_floor": {
+        "height": -0.3,
+        "ibl_intensity": 0,
+        "enabled": true,
+        "color": [
+          0.08,
+          0.1,
+          0.14
+        ],
+        "reflection_enabled": false,
+        "vsync": true,
+        "exposure": 1.15
+      },
+      "name": "Reflection Settings"
+    },
+    {
+      "name": "Physics_Floor",
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "scale3": [
+          12,
+          0.5,
+          10
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "model_renderer": {
+        "asset": "resources/samples/Models/Block_Gray.gltf",
+        "visible": true
+      },
+      "gameplay_tag": "Stage",
+      "map_object": {
+        "layer": 0,
+        "grid_size": 1,
+        "static": true,
+        "snap_to_grid": true
+      },
+      "collider": {
+        "trigger": false,
+        "layer": 0,
+        "shape": 0,
+        "enabled": true,
+        "mask": 4294967295,
+        "center": [
+          0,
+          0.5,
+          0
+        ],
+        "half_extents": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "rigid_body": {
+        "type": 0,
+        "mass": 1,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "friction": 0.6,
+        "restitution": 0.2,
+        "gravity_scale": 1,
+        "enabled": true
+      }
+    },
+    {
+      "name": "Falling_Crate_0",
+      "transform": {
+        "position": [
+          -3,
+          3,
+          0
+        ],
+        "scale3": [
+          1,
+          1,
+          1
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "model_renderer": {
+        "asset": "resources/samples/Models/Block_Orange.gltf",
+        "visible": true
+      },
+      "gameplay_tag": "Crate",
+      "map_object": {
+        "layer": 0,
+        "grid_size": 1,
+        "static": false,
+        "snap_to_grid": true
+      },
+      "collider": {
+        "trigger": false,
+        "layer": 0,
+        "shape": 0,
+        "enabled": true,
+        "mask": 4294967295,
+        "center": [
+          0,
+          0.5,
+          0
+        ],
+        "half_extents": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "rigid_body": {
+        "type": 2,
+        "mass": 1,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "friction": 0.6,
+        "restitution": 0.2,
+        "gravity_scale": 1,
+        "enabled": true
+      }
+    },
+    {
+      "name": "Falling_Crate_1",
+      "transform": {
+        "position": [
+          -1,
+          4,
+          0
+        ],
+        "scale3": [
+          1,
+          1,
+          1
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "model_renderer": {
+        "asset": "resources/samples/Models/Block_Orange.gltf",
+        "visible": true
+      },
+      "gameplay_tag": "Crate",
+      "map_object": {
+        "layer": 0,
+        "grid_size": 1,
+        "static": false,
+        "snap_to_grid": true
+      },
+      "collider": {
+        "trigger": false,
+        "layer": 0,
+        "shape": 0,
+        "enabled": true,
+        "mask": 4294967295,
+        "center": [
+          0,
+          0.5,
+          0
+        ],
+        "half_extents": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "rigid_body": {
+        "type": 2,
+        "mass": 1,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "friction": 0.6,
+        "restitution": 0.2,
+        "gravity_scale": 1,
+        "enabled": true
+      }
+    },
+    {
+      "name": "Falling_Crate_2",
+      "transform": {
+        "position": [
+          1,
+          5,
+          0
+        ],
+        "scale3": [
+          1,
+          1,
+          1
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "model_renderer": {
+        "asset": "resources/samples/Models/Block_Orange.gltf",
+        "visible": true
+      },
+      "gameplay_tag": "Crate",
+      "map_object": {
+        "layer": 0,
+        "grid_size": 1,
+        "static": false,
+        "snap_to_grid": true
+      },
+      "collider": {
+        "trigger": false,
+        "layer": 0,
+        "shape": 0,
+        "enabled": true,
+        "mask": 4294967295,
+        "center": [
+          0,
+          0.5,
+          0
+        ],
+        "half_extents": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "rigid_body": {
+        "type": 2,
+        "mass": 1,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "friction": 0.6,
+        "restitution": 0.2,
+        "gravity_scale": 1,
+        "enabled": true
+      }
+    },
+    {
+      "name": "Controller_Standing",
+      "transform": {
+        "position": [
+          0,
+          3,
+          0
+        ],
+        "scale3": [
+          0.7,
+          1.8,
+          0.7
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "model_renderer": {
+        "asset": "resources/samples/Models/Block_Yellow.gltf",
+        "visible": true
+      },
+      "gameplay_tag": "Player",
+      "map_object": {
+        "layer": 0,
+        "grid_size": 1,
+        "static": false,
+        "snap_to_grid": true
+      },
+      "collider": {
+        "trigger": false,
+        "layer": 0,
+        "shape": 0,
+        "enabled": true,
+        "mask": 4294967295,
+        "center": [
+          0,
+          0.5,
+          0
+        ],
+        "half_extents": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "character_controller": {
+        "gravity": 19.6,
+        "enabled": true,
+        "jump_speed": 7
+      }
+    },
+    {
+      "name": "Trigger_Zone",
+      "transform": {
+        "position": [
+          -3,
+          0.5,
+          0
+        ],
+        "scale3": [
+          2,
+          0.2,
+          2
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "model_renderer": {
+        "asset": "resources/samples/Models/Block_Green.gltf",
+        "visible": true
+      },
+      "gameplay_tag": "Goal",
+      "map_object": {
+        "layer": 0,
+        "grid_size": 1,
+        "static": false,
+        "snap_to_grid": true
+      },
+      "collider": {
+        "trigger": true,
+        "layer": 0,
+        "shape": 0,
+        "enabled": true,
+        "mask": 4294967295,
+        "center": [
+          0,
+          0.5,
+          0
+        ],
+        "half_extents": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      }
+    }
+  ],
+  "version": 1
+}

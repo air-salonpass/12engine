@@ -6,7 +6,7 @@
 #include <memory>
 #include <wrl.h>
 
-// 教材のRGBA16F DDSからIBL用CubeMapとGGX LUTを生成する。
+// RGBA16F DDSから、環境光の照明に使うCubeMapと反射計算用のGGX検索Textureを生成する。
 // 背景描画とは独立しているため、環境光だけを有効にできる。
 class environment_lighting12
 {

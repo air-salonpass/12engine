@@ -1,0 +1,223 @@
+{
+  "format": "JisakuEngineScene",
+  "entities": [
+    {
+      "camera": {
+        "fov": 55,
+        "active": true,
+        "pitch": 35,
+        "target": [
+          0,
+          1,
+          0
+        ],
+        "yaw": 25,
+        "distance": 12
+      },
+      "name": "Main Camera"
+    },
+    {
+      "directional_light": {
+        "direction": [
+          0.35,
+          0.8,
+          -0.45
+        ],
+        "enabled": true
+      },
+      "name": "Directional Light"
+    },
+    {
+      "reflection_floor": {
+        "height": -0.3,
+        "ibl_intensity": 0,
+        "enabled": true,
+        "color": [
+          0.08,
+          0.1,
+          0.14
+        ],
+        "reflection_enabled": false,
+        "vsync": true,
+        "exposure": 1.15
+      },
+      "name": "Reflection Settings"
+    },
+    {
+      "name": "Display_Floor",
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "scale3": [
+          10,
+          0.25,
+          6
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "model_renderer": {
+        "asset": "resources/samples/Models/Block_Gray.gltf",
+        "visible": true
+      },
+      "gameplay_tag": "Stage",
+      "map_object": {
+        "layer": 0,
+        "grid_size": 1,
+        "static": true,
+        "snap_to_grid": true
+      },
+      "collider": {
+        "trigger": false,
+        "layer": 0,
+        "shape": 0,
+        "enabled": true,
+        "mask": 4294967295,
+        "center": [
+          0,
+          0.5,
+          0
+        ],
+        "half_extents": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "rigid_body": {
+        "type": 0,
+        "mass": 1,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "friction": 0.6,
+        "restitution": 0.2,
+        "gravity_scale": 1,
+        "enabled": true
+      }
+    },
+    {
+      "name": "Animated_Marker_0",
+      "transform": {
+        "position": [
+          -3,
+          1,
+          0
+        ],
+        "scale3": [
+          0.8,
+          0.8,
+          0.8
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "model_renderer": {
+        "asset": "resources/samples/Models/FloatingMarker.gltf",
+        "visible": true
+      },
+      "gameplay_tag": "Stage",
+      "map_object": {
+        "layer": 0,
+        "grid_size": 1,
+        "static": false,
+        "snap_to_grid": true
+      },
+      "animation": {
+        "clip": 0,
+        "time": 0.0,
+        "loop": true,
+        "playing": true,
+        "speed": 0.5
+      }
+    },
+    {
+      "name": "Animated_Marker_1",
+      "transform": {
+        "position": [
+          0,
+          1,
+          0
+        ],
+        "scale3": [
+          0.8,
+          0.8,
+          0.8
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "model_renderer": {
+        "asset": "resources/samples/Models/FloatingMarker.gltf",
+        "visible": true
+      },
+      "gameplay_tag": "Stage",
+      "map_object": {
+        "layer": 0,
+        "grid_size": 1,
+        "static": false,
+        "snap_to_grid": true
+      },
+      "animation": {
+        "clip": 0,
+        "time": 0.6,
+        "loop": true,
+        "playing": true,
+        "speed": 1.0
+      }
+    },
+    {
+      "name": "Animated_Marker_2",
+      "transform": {
+        "position": [
+          3,
+          1,
+          0
+        ],
+        "scale3": [
+          0.8,
+          0.8,
+          0.8
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "model_renderer": {
+        "asset": "resources/samples/Models/FloatingMarker.gltf",
+        "visible": true
+      },
+      "gameplay_tag": "Stage",
+      "map_object": {
+        "layer": 0,
+        "grid_size": 1,
+        "static": false,
+        "snap_to_grid": true
+      },
+      "animation": {
+        "clip": 0,
+        "time": 1.2,
+        "loop": true,
+        "playing": true,
+        "speed": 1.5
+      }
+    }
+  ],
+  "version": 1
+}

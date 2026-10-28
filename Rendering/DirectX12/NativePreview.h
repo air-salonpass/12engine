@@ -5,11 +5,16 @@
 #include "EnvironmentLighting.h"
 #include "AnimationSystem12.h"
 #include "GltfRenderer.h"
+#include "FrameLimiter.h"
 #include "ModelResourceManager.h"
 #include "ScreenSpaceReflection.h"
 #include "SceneGeometryRenderer.h"
+#include "SunShadowMap.h"
 #include "../WindowApplication.h"
 #include "../Scene/SceneRegistry.h"
+#include "../Systems/PhysicsSystem.h"
+#include "../Systems/MapEditorSystem.h"
+#include "../Systems/PlaytestSystem.h"
 
 #include <atomic>
 #include <chrono>
@@ -45,8 +50,13 @@ private:
 	void shutdown();
 	void request_model_load(const std::string& filename, bool add_placement_when_ready = true);
 	scene_entity create_model_entity(const std::string& filename);
+	// Map Toolの配置要求をAsset読込み状態に関係なく受け付ける。
+	void request_map_placement(const std::string& asset, const float position[3]);
+	void apply_map_placement(scene_entity entity, const float position[3], float rotation_y,
+		float scale, float grid_size, bool add_box_collider);
 	void create_scene_services();
 	void poll_model_load();
+	void load_optional_environment();
 	bool browse_model();
 	bool browse_scene(bool save_dialog);
 	bool browse_prefab(bool save_dialog);
@@ -75,12 +85,33 @@ private:
 	void push_undo(editor_snapshot snapshot);
 	void undo();
 	void redo();
+	void start_walk_test();
+	void stop_walk_test();
+	void toggle_play();
+	void update_player_cursor();
 
 	HWND hwnd_ = nullptr;
 	directx12_renderer renderer_;
+	frame_limiter12 frame_limiter_;
 	model_resource_manager12 model_resources_;
 	scene_registry scene_;
 	animation_system12 animation_system_;
+	physics_system physics_system_;
+	map_editor_system map_editor_system_;
+	playtest_system playtest_system_;
+	std::unique_ptr<editor_snapshot> walk_test_snapshot_;
+	bool walk_test_ = false;
+	bool walk_previous_play_ = false;
+	bool walk_previous_gizmo_ = true;
+	bool walk_jump_held_ = false;
+	bool walk_reset_held_ = false;
+	scene_entity active_player_ = null_scene_entity;
+	bool first_person_active_ = false;
+	bool mouse_look_ = false;
+	bool player_paused_ = false;
+	float player_eye_y_ = 0;
+	void set_player_paused(bool paused);
+	float mouse_sensitivity_ = 0.12f;
 	scene_entity selected_entity_ = null_scene_entity;
 	scene_entity camera_entity_ = null_scene_entity;
 	scene_entity light_entity_ = null_scene_entity;
@@ -88,13 +119,35 @@ private:
 	scene_entity post_process_entity_ = null_scene_entity;
 	scene_entity rendering_settings_entity_ = null_scene_entity;
 	std::unordered_set<std::string> assets_to_place_when_ready_;
+	struct pending_map_placement
+	{
+		std::string asset;
+		float position[3]{};
+		float rotation_y = 0.0f;
+		float scale = 1.0f;
+		float grid_size = 1.0f;
+		bool add_box_collider = false;
+	};
+	std::vector<pending_map_placement> pending_map_placements_;
+	// 仮表示はEntityではない。保存・物理・Hierarchy・Undoへ混入させず、ドロップ時だけ確定する。
+	struct model_placement_preview
+	{
+		std::string asset;
+		transform_component transform;
+		bool visible=false;
+	};
+	model_placement_preview model_preview_;
+	std::string preview_requested_asset_;
+	bool drag_cancelled_=false;
 	std::string editor_error_;
 	std::string current_scene_path_;
 	std::string asset_browser_directory_;
 	std::string selected_asset_path_;
 	double asset_navigation_time_ = 0.0;
 	gltf_renderer12 model_renderer_;
+	sun_shadow_map12 sun_shadow_;
 	std::unique_ptr<environment_lighting12> environment_lighting_;
+	bool environment_load_attempted_ = false;
 	scene_geometry_renderer12 scene_geometry_;
 	scene_render_target12 scene_target_;
 	// 平面対称に描いたモデルを床Shaderで合成するための専用ターゲット。

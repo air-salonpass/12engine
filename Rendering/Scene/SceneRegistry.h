@@ -1,16 +1,22 @@
-#pragma once
+﻿#pragma once
 
 #include "Entity.h"
 #include "../Components/AnimationComponent.h"
 #include "../Components/AnimationControllerComponent.h"
 #include "../Components/CameraComponent.h"
+#include "../Components/CharacterControllerComponent.h"
+#include "../Components/ColliderComponent.h"
 #include "../Components/DirectionalLightComponent.h"
+#include "../Components/GameplayTagComponent.h"
+#include "../Components/MapObjectComponent.h"
 #include "../Components/ModelRendererComponent.h"
 #include "../Components/NameComponent.h"
 #include "../Components/PostProcessComponent.h"
+#include "../Components/PlaytestControllerComponent.h"
 #include "../Components/PrefabComponent.h"
 #include "../Components/ReflectionFloorComponent.h"
 #include "../Components/RenderingSettingsComponent.h"
+#include "../Components/RigidBodyComponent.h"
 #include "../Components/TransformComponent.h"
 
 #include <algorithm>
@@ -89,10 +95,15 @@ public:
 	animation_component& add_animation(scene_entity entity) { return add<animation_component>(entity); }
 	animation_controller_component& add_animation_controller(scene_entity entity) { return add<animation_controller_component>(entity); }
 	directional_light_component& add_directional_light(scene_entity entity) { return add<directional_light_component>(entity); }
+	gameplay_tag_component& add_gameplay_tag(scene_entity entity) { return add<gameplay_tag_component>(entity); }
 	reflection_floor_component& add_reflection_floor(scene_entity entity) { return add<reflection_floor_component>(entity); }
 	post_process_component& add_post_process(scene_entity entity) { return add<post_process_component>(entity); }
 	rendering_settings_component& add_rendering_settings(scene_entity entity) { return add<rendering_settings_component>(entity); }
 	prefab_component& add_prefab(scene_entity entity) { return add<prefab_component>(entity); }
+	map_object_component& add_map_object(scene_entity entity) { return add<map_object_component>(entity); }
+	collider_component& add_collider(scene_entity entity) { return add<collider_component>(entity); }
+	rigid_body_component& add_rigid_body(scene_entity entity) { return add<rigid_body_component>(entity); }
+	character_controller_component& add_character_controller(scene_entity entity) { return add<character_controller_component>(entity); }
 
 	void destroy(scene_entity entity)
 	{
@@ -115,7 +126,25 @@ public:
 
 	const std::vector<scene_entity>& entities() const { return entities_; }
 
-	// 参照プロジェクトと同様に、指定したComponentを全て持つEntityだけをSystemへ渡す。
+	// 表示名ではなくGameplay Tagでゲーム対象を検索する。
+	// 単体検索はPlayerやMainCamera、複数検索はEnemyやPickupなどに使う。
+	scene_entity find_with_tag(const std::string& tag)
+	{
+		for (const scene_entity entity : entities_)
+			if (const auto* component = get<gameplay_tag_component>(entity); component && component->value == tag)
+				return entity;
+		return null_scene_entity;
+	}
+	std::vector<scene_entity> find_all_with_tag(const std::string& tag)
+	{
+		std::vector<scene_entity> result;
+		for (const scene_entity entity : entities_)
+			if (const auto* component = get<gameplay_tag_component>(entity); component && component->value == tag)
+				result.push_back(entity);
+		return result;
+	}
+
+	// 指定したComponentを全て持つEntityだけをSystemへ渡す。必要なデータがないEntityは対象外になる。
 	// 例: for_each<transform_component, health_component>(...) と書くと、
 	// 両方を持つEntityだけが対象になる。System側で全Entityを手作業検索しないこと。
 	template<class... Components, class Function>
@@ -152,10 +181,15 @@ public:
 	animation_controller_component* animation_controller(scene_entity entity) { return get<animation_controller_component>(entity); }
 	camera_component* camera(scene_entity entity) { return get<camera_component>(entity); }
 	directional_light_component* directional_light(scene_entity entity) { return get<directional_light_component>(entity); }
+	gameplay_tag_component* gameplay_tag(scene_entity entity) { return get<gameplay_tag_component>(entity); }
 	reflection_floor_component* reflection_floor(scene_entity entity) { return get<reflection_floor_component>(entity); }
 	post_process_component* post_process(scene_entity entity) { return get<post_process_component>(entity); }
 	rendering_settings_component* rendering_settings(scene_entity entity) { return get<rendering_settings_component>(entity); }
 	prefab_component* prefab(scene_entity entity) { return get<prefab_component>(entity); }
+	map_object_component* map_object(scene_entity entity) { return get<map_object_component>(entity); }
+	collider_component* collider(scene_entity entity) { return get<collider_component>(entity); }
+	rigid_body_component* rigid_body(scene_entity entity) { return get<rigid_body_component>(entity); }
+	character_controller_component* character_controller(scene_entity entity) { return get<character_controller_component>(entity); }
 
 private:
 	struct component_storage_base

@@ -1,7 +1,9 @@
 #include "SceneGeometryRenderer.h"
+#include "LightingShader.h"
 
 #include <cstring>
 #include <d3dcompiler.h>
+#include <string>
 
 #pragma comment(lib, "d3dcompiler.lib")
 
@@ -10,9 +12,9 @@ using namespace DirectX;
 
 namespace
 {
-	constexpr const char* floor_shader = R"(
+	const std::string floor_shader = std::string(lighting_shader_source12) + R"(
 cbuffer Constants:register(b0) { row_major float4x4 world; row_major float4x4 view;
- row_major float4x4 projection; float4 floor_color; float4 render_parameters; };
+ row_major float4x4 projection; float4 floor_color; float4 render_parameters; float4 camera_position; };
 Texture2D reflection_texture:register(t0); SamplerState linear_clamp:register(s0);
 struct Input { float3 position:POSITION; float3 normal:NORMAL; };
 struct Varying { float4 position:SV_POSITION; float3 view_normal:NORMAL; float3 world_position:TEXCOORD; };
@@ -24,15 +26,25 @@ Varying VSMain(Input input) {
 Output PSMain(Varying input) {
  float2 uv=input.position.xy/max(render_parameters.xy,float2(1,1));
  float4 reflected=reflection_texture.SampleLevel(linear_clamp,uv,0);
- float amount=saturate(reflected.a*render_parameters.z);
- Output o; o.color=float4(lerp(floor_color.rgb,reflected.rgb,amount),1);
+ float3 n=float3(0,1,0); float3 v=normalize(camera_position.xyz-input.world_position);
+ float3 l=normalize(sun_direction.xyz+float3(0,0.00001,0)); float3 h=normalize(v+l);
+ // 単色の床も照明と影を受ける。円やグリッド画像を足さず、反射だけで表面の質感を出す。
+ float nl=saturate(dot(n,l)); float nv=saturate(dot(n,v));
+ float3 direct=floor_color.rgb/3.14159265*nl*sun_color_intensity.rgb*sun_color_intensity.a;
+ float gloss=pow(saturate(dot(n,h)),64)*0.12*nl;
+ float shadow=sunlight_visibility(input.world_position,n);
+ float3 surface=(direct+gloss*sun_color_intensity.rgb*sun_color_intensity.a)*shadow+
+  floor_color.rgb*procedural_environment(n);
+ float fresnel=0.04+0.96*pow(1-nv,5);
+ float amount=saturate(reflected.a*render_parameters.z*(0.25+fresnel));
+ Output o; o.color=float4(lerp(surface,reflected.rgb,amount),1);
  o.normal=float4(normalize(input.view_normal)*0.5+0.5,1); return o;
 })";
 
 	bool compile(const char* entry, const char* target, ComPtr<ID3DBlob>& blob)
 	{
 		ComPtr<ID3DBlob> errors;
-		return SUCCEEDED(D3DCompile(floor_shader, std::strlen(floor_shader), "SceneFloor12", nullptr,
+		return SUCCEEDED(D3DCompile(floor_shader.c_str(), floor_shader.size(), "SceneFloor12", nullptr,
 			nullptr, entry, target, D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, blob.GetAddressOf(), errors.GetAddressOf()));
 	}
 }
@@ -41,7 +53,7 @@ bool scene_geometry_renderer12::initialize(std::shared_ptr<directx12_device> dev
 {
 	device_ = std::move(device);
 	if (!device_) return false;
-	D3D12_ROOT_PARAMETER parameters[2]{};
+	D3D12_ROOT_PARAMETER parameters[4]{};
 	parameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	parameters[0].Descriptor.ShaderRegister = 0;
 	parameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -53,16 +65,26 @@ bool scene_geometry_renderer12::initialize(std::shared_ptr<directx12_device> dev
 	parameters[1].DescriptorTable.NumDescriptorRanges = 1;
 	parameters[1].DescriptorTable.pDescriptorRanges = &reflection_range;
 	parameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	D3D12_STATIC_SAMPLER_DESC sampler{};
-	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-	sampler.AddressU = sampler.AddressV = sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	sampler.MaxLOD = D3D12_FLOAT32_MAX;
-	sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	D3D12_DESCRIPTOR_RANGE shadow_range = reflection_range;
+	shadow_range.BaseShaderRegister = 12;
+	parameters[2] = parameters[1];
+	parameters[2].DescriptorTable.pDescriptorRanges = &shadow_range;
+	parameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	parameters[3].Descriptor.ShaderRegister = 2;
+	parameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	D3D12_STATIC_SAMPLER_DESC samplers[2]{};
+	samplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	samplers[0].AddressU = samplers[0].AddressV = samplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplers[0].MaxLOD = D3D12_FLOAT32_MAX;
+	samplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	samplers[1] = samplers[0];
+	samplers[1].Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+	samplers[1].ShaderRegister = 2;
 	D3D12_ROOT_SIGNATURE_DESC root_desc{};
 	root_desc.NumParameters = _countof(parameters);
 	root_desc.pParameters = parameters;
-	root_desc.NumStaticSamplers = 1;
-	root_desc.pStaticSamplers = &sampler;
+	root_desc.NumStaticSamplers = _countof(samplers);
+	root_desc.pStaticSamplers = samplers;
 	root_desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 	ComPtr<ID3DBlob> serialized, errors;
 	if (FAILED(D3D12SerializeRootSignature(&root_desc, D3D_ROOT_SIGNATURE_VERSION_1,
@@ -137,7 +159,8 @@ void scene_geometry_renderer12::begin_frame(UINT frame_index)
 
 void scene_geometry_renderer12::render_floor(ID3D12GraphicsCommandList* command_list,
 	const XMFLOAT4X4& view, const XMFLOAT4X4& projection, float floor_height, const XMFLOAT3& color,
-	D3D12_GPU_DESCRIPTOR_HANDLE reflection, UINT target_width, UINT target_height, float reflection_strength)
+	D3D12_GPU_DESCRIPTOR_HANDLE reflection, UINT target_width, UINT target_height, float reflection_strength,
+	D3D12_GPU_VIRTUAL_ADDRESS lighting, D3D12_GPU_DESCRIPTOR_HANDLE shadow, const XMFLOAT3& camera_position)
 {
 	if (!command_list || !mapped_constants_) return;
 	constants data{};
@@ -145,6 +168,7 @@ void scene_geometry_renderer12::render_floor(ID3D12GraphicsCommandList* command_
 	data.view = view;
 	data.projection = projection;
 	data.color = { color.x, color.y, color.z, 1.0f };
+	data.camera_position = { camera_position.x, camera_position.y, camera_position.z, 1.0f };
 	data.render_parameters = { static_cast<float>(target_width), static_cast<float>(target_height),
 		(std::max)(reflection_strength, 0.0f), 0.0f };
 	const std::size_t offset = static_cast<std::size_t>(frame_index_) * 256;
@@ -155,6 +179,8 @@ void scene_geometry_renderer12::render_floor(ID3D12GraphicsCommandList* command_
 	ID3D12DescriptorHeap* heaps[]{ device_->shader_descriptors().heap() };
 	command_list->SetDescriptorHeaps(1, heaps);
 	command_list->SetGraphicsRootDescriptorTable(1, reflection);
+	command_list->SetGraphicsRootDescriptorTable(2, shadow);
+	command_list->SetGraphicsRootConstantBufferView(3, lighting);
 	command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	command_list->IASetVertexBuffers(0, 1, &vertex_view_);
 	command_list->DrawInstanced(6, 1, 0, 0);

@@ -265,6 +265,42 @@ bool gltf_model12::build_gpu_resources()
 			std::vector<std::uint32_t> indices(index_accessor.count);
 			for (std::size_t i = 0; i < indices.size(); ++i)
 				indices[i] = read_uint_component(element_address(source_, index_accessor, i), index_accessor.componentType);
+			// glTFはTANGENTを省略できる。固定のX方向でNormal Mapを読むと曲面の光が崩れるため、
+			// UVと三角形の向きから接線を作る。ここで作れば通常描画とMesh Shaderの両方へ同じ値が届く。
+			if (source_primitive.attributes.find("TANGENT") == source_primitive.attributes.end())
+			{
+				std::vector<XMFLOAT3> tangent_sum(vertices.size()), bitangent_sum(vertices.size());
+				for (std::size_t i = 0; i + 2 < indices.size(); i += 3)
+				{
+					const auto a = indices[i], b = indices[i+1], c = indices[i+2];
+					if (a >= vertices.size() || b >= vertices.size() || c >= vertices.size()) continue;
+					const auto& v0 = vertices[a]; const auto& v1 = vertices[b]; const auto& v2 = vertices[c];
+					const float u1 = v1.texcoord.x-v0.texcoord.x, v1_uv = v1.texcoord.y-v0.texcoord.y;
+					const float u2 = v2.texcoord.x-v0.texcoord.x, v2_uv = v2.texcoord.y-v0.texcoord.y;
+					const float determinant = u1*v2_uv-u2*v1_uv;
+					if (std::abs(determinant) < 0.000001f) continue;
+					const XMVECTOR e1 = XMLoadFloat3(&v1.position)-XMLoadFloat3(&v0.position);
+					const XMVECTOR e2 = XMLoadFloat3(&v2.position)-XMLoadFloat3(&v0.position);
+					const XMVECTOR t = (e1*v2_uv-e2*v1_uv)/determinant;
+					const XMVECTOR bitangent = (e2*u1-e1*u2)/determinant;
+					for (const auto index : {a,b,c})
+					{
+						XMStoreFloat3(&tangent_sum[index], XMLoadFloat3(&tangent_sum[index])+t);
+						XMStoreFloat3(&bitangent_sum[index], XMLoadFloat3(&bitangent_sum[index])+bitangent);
+					}
+				}
+				for (std::size_t i = 0; i < vertices.size(); ++i)
+				{
+					const XMVECTOR normal = XMVector3Normalize(XMLoadFloat3(&vertices[i].normal));
+					XMVECTOR tangent = XMLoadFloat3(&tangent_sum[i]);
+					tangent -= normal*XMVector3Dot(normal,tangent);
+					if (XMVectorGetX(XMVector3LengthSq(tangent)) < 0.000001f)
+						tangent = XMVector3Cross(std::abs(XMVectorGetY(normal)) < 0.9f ? XMVectorSet(0,1,0,0) : XMVectorSet(1,0,0,0),normal);
+					tangent = XMVector3Normalize(tangent);
+					const float sign = XMVectorGetX(XMVector3Dot(XMVector3Cross(normal,tangent),XMLoadFloat3(&bitangent_sum[i]))) < 0 ? -1.0f : 1.0f;
+					XMStoreFloat4(&vertices[i].tangent,XMVectorSetW(tangent,sign));
+				}
+			}
 
 			primitive& target = target_mesh.primitives.emplace_back();
 			target.material = source_primitive.material;
@@ -467,6 +503,9 @@ void gltf_model12::read_materials()
 		target.alpha_mode = source.alphaMode == "MASK" ? 1 : source.alphaMode == "BLEND" ? 2 : 0;
 		target.alpha_cutoff = static_cast<float>(source.alphaCutoff);
 		target.double_sided = source.doubleSided;
+		// 石の見本は画像を使わず、明示した材質だけワールド座標の手続き模様を有効にする。
+		target.procedural_stone = source.extras.Has("jisaku_stone") && source.extras.Get("jisaku_stone").IsBool() &&
+			source.extras.Get("jisaku_stone").Get<bool>();
 		if (source.emissiveFactor.size() == 3)
 			target.emissive = { static_cast<float>(source.emissiveFactor[0]), static_cast<float>(source.emissiveFactor[1]),
 				static_cast<float>(source.emissiveFactor[2]) };

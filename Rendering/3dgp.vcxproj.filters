@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="DirectX12"><UniqueIdentifier>{B44FE52D-E19F-44D6-9A27-4AB27D7B1A01}</UniqueIdentifier></Filter>
     <Filter Include="Components"><UniqueIdentifier>{964A4995-780F-4702-A0F8-EF128BBBFCD8}</UniqueIdentifier></Filter>
     <Filter Include="Scene"><UniqueIdentifier>{6EC45B16-69D0-4EC5-A725-F2093E03B827}</UniqueIdentifier></Filter>
     <Filter Include="Threading"><UniqueIdentifier>{C9FDEEE4-9E32-46C2-A5A4-7E84D2FD8F22}</UniqueIdentifier></Filter>
+    <Filter Include="Systems"><UniqueIdentifier>{57AF0D2E-AFC4-4E04-89EC-45FC1352B305}</UniqueIdentifier></Filter>
     <Filter Include="ThirdParty"><UniqueIdentifier>{A85CE978-F382-48D3-B494-B8ADBD4EC032}</UniqueIdentifier></Filter>
     <Filter Include="ImGui"><UniqueIdentifier>{5D2ED881-4062-49D0-A1CE-86240074D016}</UniqueIdentifier></Filter>
     <Filter Include="Resources"><UniqueIdentifier>{67DA6AB6-F800-4C08-8B7A-83BB121AAD01}</UniqueIdentifier></Filter>
@@ -19,6 +20,7 @@
   <ItemGroup>
     <ClCompile Include="DirectX12\CommandQueue.cpp"><Filter>DirectX12</Filter></ClCompile>
     <ClCompile Include="DirectX12\DescriptorAllocator.cpp"><Filter>DirectX12</Filter></ClCompile>
+    <ClCompile Include="DirectX12\FrameLimiter.cpp"><Filter>DirectX12</Filter></ClCompile>
     <ClCompile Include="DirectX12\Device.cpp"><Filter>DirectX12</Filter></ClCompile>
     <ClCompile Include="DirectX12\Renderer.cpp"><Filter>DirectX12</Filter></ClCompile>
     <ClCompile Include="DirectX12\GltfModel.cpp"><Filter>DirectX12</Filter></ClCompile>
@@ -34,6 +36,9 @@
     <ClCompile Include="DirectX12\AnimationSystem12.cpp"><Filter>DirectX12</Filter></ClCompile>
     <ClCompile Include="DirectX12\TinyGltfImplementation.cpp"><Filter>DirectX12</Filter></ClCompile>
     <ClCompile Include="Threading\AtomicJobWorker.cpp"><Filter>Threading</Filter></ClCompile>
+    <ClCompile Include="Systems\PhysicsSystem.cpp"><Filter>Systems</Filter></ClCompile>
+	<ClCompile Include="Systems\MapEditorSystem.cpp"><Filter>Systems</Filter></ClCompile>
+    <ClCompile Include="Systems\PlaytestSystem.cpp"><Filter>Systems</Filter></ClCompile>
     <ClCompile Include="ThirdParty\ImGuizmo\ImGuizmo.cpp"><Filter>ThirdParty</Filter></ClCompile>
     <ClCompile Include="imgui\imgui.cpp"><Filter>ImGui</Filter></ClCompile>
     <ClCompile Include="imgui\imgui_draw.cpp"><Filter>ImGui</Filter></ClCompile>
@@ -46,14 +51,21 @@
   <ItemGroup>
     <ClInclude Include="DirectX12\CommandQueue.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\DescriptorAllocator.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\FrameResource.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\FrameLimiter.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\GraphicsConfig.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\Device.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\Renderer.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\GltfModel.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\GltfRenderer.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\LightingFrame.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\LightingShader.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\SunShadowMap.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\EditorImGui.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\SceneRenderTarget.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\ScreenSpaceReflection.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\NativePreview.h"><Filter>DirectX12</Filter></ClInclude>
+    <ClInclude Include="DirectX12\EditorUiHelp.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\EditorViewTarget.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\ModelResourceManager.h"><Filter>DirectX12</Filter></ClInclude>
     <ClInclude Include="DirectX12\SceneGeometryRenderer.h"><Filter>DirectX12</Filter></ClInclude>
@@ -65,13 +77,18 @@
     <ClInclude Include="Components\AnimationComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="Components\AnimationControllerComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="Components\CameraComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\CharacterControllerComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\ColliderComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="Components\DirectionalLightComponent.h"><Filter>Components</Filter></ClInclude>
+	<ClInclude Include="Components\GameplayTagComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\MapObjectComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="Components\ModelRendererComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="Components\NameComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="Components\PostProcessComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="Components\PrefabComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="Components\ReflectionFloorComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="Components\RenderingSettingsComponent.h"><Filter>Components</Filter></ClInclude>
+    <ClInclude Include="Components\RigidBodyComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="Components\TransformComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="ThirdParty\ImGuizmo\ImGuizmo.h"><Filter>ThirdParty</Filter></ClInclude>
     <ClInclude Include="imgui\imconfig.h"><Filter>ImGui</Filter></ClInclude>
@@ -83,13 +100,21 @@
     <ClInclude Include="imgui\imstb_textedit.h"><Filter>ImGui</Filter></ClInclude>
     <ClInclude Include="imgui\imstb_truetype.h"><Filter>ImGui</Filter></ClInclude>
     <ClInclude Include="WindowApplication.h"><Filter>Application</Filter></ClInclude>
+    <ClInclude Include="Systems\PhysicsSystem.h"><Filter>Systems</Filter></ClInclude>
+	<ClInclude Include="Systems\MapEditorSystem.h"><Filter>Systems</Filter></ClInclude>
+    <ClInclude Include="Systems\PlaytestSystem.h"><Filter>Systems</Filter></ClInclude>
+    <ClInclude Include="Components\PlaytestControllerComponent.h"><Filter>Components</Filter></ClInclude>
     <ClInclude Include="tinygltf-release\json.hpp"><Filter>ThirdParty</Filter></ClInclude>
     <ClInclude Include="tinygltf-release\tiny_gltf.h"><Filter>ThirdParty</Filter></ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="DirectX12\Shaders\GltfMeshMS.hlsl"><Filter>DirectX12\Shaders</Filter></FxCompile>
     <None Include="COMPONENT_SYSTEM_GUIDE.md"><Filter>Documentation</Filter></None>
+    <None Include="DirectX12\BEGINNER_IMPLEMENTATION_GUIDE.md"><Filter>Documentation</Filter></None>
+    <None Include="DirectX12\TEAM_PRODUCTION_GAP_ANALYSIS.md"><Filter>Documentation</Filter></None>
     <None Include="DirectX12\TEAM_DEVELOPMENT_GUIDE.md"><Filter>Documentation</Filter></None>
+    <None Include="Documentation\PHYSICS_GUIDE.md"><Filter>Documentation</Filter></None>
+	<None Include="Documentation\MAP_EDITOR_GUIDE.md"><Filter>Documentation</Filter></None>
     <None Include="resources\environments\hilly_terrain_01_puresky\skybox.dds"><Filter>Resources</Filter></None>
     <None Include="resources\environments\hilly_terrain_01_puresky\diffuse_iem.dds"><Filter>Resources</Filter></None>
     <None Include="resources\environments\hilly_terrain_01_puresky\specular_pmrem.dds"><Filter>Resources</Filter></None>
@@ -303,5 +328,25 @@
     <None Include="ShaderLibrary\ShaderProgrammingIII\velocity_neighbor_max_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
     <None Include="ShaderLibrary\ShaderProgrammingIII\velocity_tile_max_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
     <None Include="ShaderLibrary\ShaderProgrammingIII\vignette_ps.hlsl"><Filter>Shader Library\Shader Programming III</Filter></None>
+  </ItemGroup>
+  <ItemGroup><Filter Include="Networking"><UniqueIdentifier>{E9B1782D-FB20-4681-A29A-B9AC07F86176}</UniqueIdentifier></Filter></ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Networking\FrameHistory.h"><Filter>Networking</Filter></ClInclude>
+    <ClInclude Include="Networking\RollbackSession.h"><Filter>Networking</Filter></ClInclude>
+    <ClInclude Include="Networking\PeerChannel.h"><Filter>Networking</Filter></ClInclude>
+    <ClInclude Include="Networking\UdpTransport.h"><Filter>Networking</Filter></ClInclude>
+    <ClCompile Include="Networking\UdpTransport.cpp"><Filter>Networking</Filter></ClCompile>
+  </ItemGroup>
+  <ItemGroup><ClInclude Include="Networking\ReplayEffects.h"><Filter>Networking</Filter></ClInclude></ItemGroup>
+  <ItemGroup><ClInclude Include="Networking\StateArchive.h"><Filter>Networking</Filter></ClInclude></ItemGroup>
+  <ItemGroup><ClInclude Include="Networking\RoomHandshake.h"><Filter>Networking</Filter></ClInclude></ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Networking\ContentFingerprint.h"><Filter>Networking</Filter></ClInclude>
+    <ClInclude Include="Networking\ConfirmedEffects.h"><Filter>Networking</Filter></ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Networking\LanDiscovery.h"><Filter>Networking</Filter></ClInclude>
+    <ClInclude Include="Networking\ConnectionAddress.h"><Filter>Networking</Filter></ClInclude>
+    <ClInclude Include="Systems\MenuGamepadNavigation.h"><Filter>Systems</Filter></ClInclude>
   </ItemGroup>
 </Project>

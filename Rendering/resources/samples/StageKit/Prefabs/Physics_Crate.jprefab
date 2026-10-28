@@ -1,0 +1,65 @@
+{
+  "entity": {
+    "name": "Physics_Crate",
+    "transform": {
+      "position": [
+        0,
+        2,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale3": [
+        1.1,
+        1.1,
+        1.1
+      ]
+    },
+    "model_renderer": {
+      "visible": true,
+      "asset": "resources/samples/StageKit/Models/WeatheredMetal.gltf"
+    },
+    "map_object": {
+      "static": false,
+      "layer": 0,
+      "snap_to_grid": true,
+      "grid_size": 0.5
+    },
+    "gameplay_tag": "Stage",
+    "collider": {
+      "shape": 0,
+      "enabled": true,
+      "mask": 4294967295,
+      "layer": 0,
+      "center": [
+        0,
+        0.5,
+        0
+      ],
+      "half_extents": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "trigger": false
+    },
+    "rigid_body": {
+      "velocity": [
+        0,
+        0,
+        0
+      ],
+      "gravity_scale": 1,
+      "type": 2,
+      "friction": 0.7,
+      "mass": 2,
+      "enabled": true,
+      "restitution": 0.05
+    }
+  },
+  "version": 1,
+  "format": "JisakuEnginePrefab"
+}

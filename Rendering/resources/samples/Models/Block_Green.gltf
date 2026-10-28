@@ -1,0 +1,106 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "JisakuEngine sample geometry"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Block_Green",
+      "mesh": 0
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "material": 0,
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1
+          },
+          "indices": 2
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "Block_Green",
+      "doubleSided": true,
+      "pbrMetallicRoughness": {
+        "roughnessFactor": 0.8,
+        "metallicFactor": 0,
+        "baseColorFactor": [
+          0.08,
+          0.65,
+          0.3,
+          1
+        ]
+      }
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 288,
+      "target": 34962,
+      "byteOffset": 0
+    },
+    {
+      "buffer": 0,
+      "byteLength": 288,
+      "target": 34962,
+      "byteOffset": 288
+    },
+    {
+      "buffer": 0,
+      "byteLength": 72,
+      "target": 34963,
+      "byteOffset": 576
+    }
+  ],
+  "accessors": [
+    {
+      "max": [
+        0.5,
+        1,
+        0.5
+      ],
+      "type": "VEC3",
+      "bufferView": 0,
+      "componentType": 5126,
+      "min": [
+        -0.5,
+        0,
+        -0.5
+      ],
+      "count": 24
+    },
+    {
+      "count": 24,
+      "bufferView": 1,
+      "type": "VEC3",
+      "componentType": 5126
+    },
+    {
+      "count": 36,
+      "bufferView": 2,
+      "type": "SCALAR",
+      "componentType": 5123
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "data:application/octet-stream;base64,AAAAvwAAAAAAAAA/AAAAPwAAAAAAAAA/AAAAPwAAgD8AAAA/AAAAvwAAgD8AAAA/AAAAPwAAAAAAAAC/AAAAvwAAAAAAAAC/AAAAvwAAgD8AAAC/AAAAPwAAgD8AAAC/AAAAPwAAAAAAAAA/AAAAPwAAAAAAAAC/AAAAPwAAgD8AAAC/AAAAPwAAgD8AAAA/AAAAvwAAAAAAAAC/AAAAvwAAAAAAAAA/AAAAvwAAgD8AAAA/AAAAvwAAgD8AAAC/AAAAvwAAgD8AAAA/AAAAPwAAgD8AAAA/AAAAPwAAgD8AAAC/AAAAvwAAgD8AAAC/AAAAvwAAAAAAAAC/AAAAPwAAAAAAAAC/AAAAPwAAAAAAAAA/AAAAvwAAAAAAAAA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAABAAIAAAACAAMABAAFAAYABAAGAAcACAAJAAoACAAKAAsADAANAA4ADAAOAA8AEAARABIAEAASABMAFAAVABYAFAAWABcA",
+      "byteLength": 648
+    }
+  ]
+}

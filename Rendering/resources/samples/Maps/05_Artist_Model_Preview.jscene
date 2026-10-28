@@ -1,0 +1,128 @@
+{
+  "format": "JisakuEngineScene",
+  "version": 1,
+  "entities": [
+    {
+      "camera": {
+        "active": true,
+        "yaw": 14,
+        "fov": 42,
+        "pitch": 18,
+        "distance": 7,
+        "target": [
+          0,
+          1.4,
+          0
+        ]
+      },
+      "name": "Main Camera"
+    },
+    {
+      "directional_light": {
+        "ambient_intensity": 0.65,
+        "shadow_strength": 0.9,
+        "intensity": 3.5,
+        "ground_color": [
+          0.18,
+          0.14,
+          0.11
+        ],
+        "direction": [
+          -0.45,
+          0.8,
+          -0.6
+        ],
+        "shadow_bias": 0.0006,
+        "enabled": true,
+        "color": [
+          1,
+          0.91,
+          0.78
+        ],
+        "shadows": true,
+        "shadow_distance": 22,
+        "sky_color": [
+          0.32,
+          0.48,
+          0.72
+        ]
+      },
+      "name": "Directional Light"
+    },
+    {
+      "post_process": {
+        "ao_strength": 0.9,
+        "ao_radius": 0.6,
+        "exposure": 1,
+        "ambient_occlusion": true
+      },
+      "name": "Post Process Volume"
+    },
+    {
+      "reflection_floor": {
+        "planar_reflection": true,
+        "exposure": 1,
+        "height": 0,
+        "vsync": true,
+        "reflection_enabled": true,
+        "enabled": true,
+        "color": [
+          0.19,
+          0.21,
+          0.23
+        ],
+        "ibl_intensity": 0,
+        "strength": 0.35
+      },
+      "name": "Reflection Settings"
+    },
+    {
+      "model_renderer": {
+        "visible": true,
+        "asset": "resources/gltf/DamagedHelmet/DamagedHelmet.gltf"
+      },
+      "name": "Replaceable Helmet Preview",
+      "transform": {
+        "rotation": [
+          0,
+          180,
+          0
+        ],
+        "position": [
+          0,
+          1.9,
+          0
+        ],
+        "scale3": [
+          1.5,
+          1.5,
+          1.5
+        ]
+      }
+    },
+    {
+      "model_renderer": {
+        "visible": true,
+        "asset": "resources/samples/Models/Block_Gray.gltf"
+      },
+      "name": "Artist Preview Plinth",
+      "transform": {
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "scale3": [
+          4,
+          0.45,
+          3
+        ]
+      }
+    }
+  ]
+}

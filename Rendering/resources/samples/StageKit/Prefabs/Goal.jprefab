@@ -1,0 +1,52 @@
+{
+  "entity": {
+    "name": "Goal",
+    "transform": {
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale3": [
+        3,
+        0.15,
+        2
+      ]
+    },
+    "model_renderer": {
+      "visible": true,
+      "asset": "resources/samples/StageKit/Models/GreenMarker.gltf"
+    },
+    "map_object": {
+      "static": false,
+      "layer": 0,
+      "snap_to_grid": true,
+      "grid_size": 0.5
+    },
+    "gameplay_tag": "Goal",
+    "collider": {
+      "shape": 0,
+      "enabled": true,
+      "mask": 4294967295,
+      "layer": 0,
+      "center": [
+        0,
+        0.5,
+        0
+      ],
+      "half_extents": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "trigger": true
+    }
+  },
+  "version": 1,
+  "format": "JisakuEnginePrefab"
+}

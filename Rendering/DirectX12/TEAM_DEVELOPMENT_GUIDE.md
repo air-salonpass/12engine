@@ -16,23 +16,23 @@ Graphics、Compute、Copyの各Queueは独立しています。別Queueの結果
 
 CommandAllocator、動的Constant Buffer、スキニング出力、一時Render Targetはフレーム数分用意します。GPUが使用中のフレーム資源をCPUが上書きしてはいけません。該当フレームのFence完了を確認してからAllocatorをResetします。
 
-削除要求が来たGPUリソースは即座に破棄しません。最後に参照したFence値と一緒に遅延削除キューへ入れ、完了後に解放します。`shared_ptr`だけではGPU側の参照期間を表現できない点に注意してください。
+GPUリソース解放時はGPU完了を確認する必要があります。今後の共通化では、最後に参照したFence値とともに遅延削除キューへ入れる設計を目指します（共通キューは残課題です）。`shared_ptr`だけではGPU側の参照期間を表現できない点に注意してください。
 
 ## 非同期モデルロード
 
-ファイル解析と画像デコードはCPUワーカーで行い、GPU転送はCopy Queueへ記録します。モデルをSceneへ公開する条件は、CPU解析の完了だけでなくCopy Fenceの完了と、描画用状態へのResource Barrier完了です。
+現在はワーカーからモデルのloadを呼び、ファイル解析とGPU資源作成を進めます。Upload専用ContextとCopy Queueの共通化は今後の課題です。モデルをSceneへ公開する条件は、CPU解析の完了だけでなくCopy Fenceの完了と、描画用状態へのResource Barrier完了です。
 
 ロード中のアセットをゲームコードが参照する場合は、準備完了状態を必ず確認します。準備前は代替モデルを表示し、ゲームループを待機させない設計にします。
 
-起動時の標準モデルは`std::atomic`制御のワーカーで読み込みます。その並行時間にMain ThreadでIBLを準備し、最初のモデル描画より前に照明を完成させます。追加モデルのGPU ResourceやDescriptorは、完成した結果をmutexで一括して受け渡し、Main Threadのフレーム境界で公開します。
+起動時の標準モデルは`std::atomic`制御のワーカーで読み込みます。照明は画像不要の手続き環境光で開始します。IBL Intensityを0より大きくした場合だけ、描画命令の記録前にMain Threadで任意のDDS環境画像を一度読み込みます。追加モデルのGPU ResourceやDescriptorは、完成した結果をmutexで一括して受け渡し、Main Threadのフレーム境界で公開します。
 
-IBLは元DDSの全Mipを一度メモリへ読むのではなく、Diffuse 128px、Specular／BRDF LUT 256px以下のMipだけをファイルから直接読みます。元教材ファイルは変更せず、起動時のI/OとGPU転送量を抑えます。
+IBLはDDSの全Mipを一度メモリへ読むのではなく、Diffuse 128px、Specular／BRDF LUT 256px以下のMipだけをファイルから直接読みます。必要なMipだけを読むことで、任意IBLの読込み時のI/OとGPU転送量を抑えます。
 
 ## モデルとアニメーション
 
 静的モデルとスキンモデルを分け、スキンを持つモデルだけVertex ShaderまたはMesh Shaderで関節行列を適用します。CPU側で計算したEntityごとの姿勢は、通常描画と反射元のG-buffer描画で共有します。
 
-アニメーション時刻やTransformの更新はゲームスレッドで確定し、描画スレッドにはフレーム用のスナップショットを渡します。描画中のComponent配列をゲームスレッドから変更しないでください。
+現在はメインスレッドでupdateの後にrenderを呼びます。将来ゲーム更新と描画を別スレッドにする場合は、フレーム用のスナップショットを渡し、描画中のComponent配列を別スレッドから変更しない設計にします。
 
 ## SSRとポストプロセス
 
@@ -40,7 +40,7 @@ SSRはScene Color、Depth、NormalなどをSRVとして読みます。GBuffer描
 
 SceneビューとGameビューで同じ結果を使う場合、完成したScene Textureを共有します。Gizmoや選択枠はSceneビューだけへ合成し、Gameビューへ混ぜません。
 
-床は画面外で欠けない平面反射を標準とし、教材のSSRは切替可能なフォールバックとして保持します。平面反射はモデルを追加で一度描くため、低性能GPUではInspectorからSSRへ切り替えるか反射を無効化してください。
+床は画面外で欠けない平面反射を標準とし、画面内情報を使うSSRは切替可能なフォールバックとして保持します。平面反射はモデルを追加で一度描くため、低性能GPUではInspectorからSSRへ切り替えるか反射を無効化してください。
 
 ## ImGuiとGizmo
 

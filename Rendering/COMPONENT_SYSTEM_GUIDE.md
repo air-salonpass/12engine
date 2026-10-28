@@ -11,7 +11,7 @@ ECSが管理するのは、保存・複製・編集したいSceneとゲームの
 
 ## 現在のフォルダ構成
 
-参照プロジェクトと同じ考え方で、Component、System、Registryを別ファイルへ分離しています。
+状態を持つComponent、処理を行うSystem、データを管理するRegistryを別ファイルへ分離しています。
 
 ```text
 Rendering/
@@ -26,10 +26,13 @@ Rendering/
 └─ Systems/
    ├─ SceneSystem.h
    ├─ SceneSystemManager.h
-   ├─ AnimationSystem.h / .cpp
    ├─ PostProcessSystem.h / .cpp
    └─ 機能ごとのSystem.h / .cpp
 ```
+
+描画資源を使うAnimation Systemは`DirectX12/AnimationSystem12.h / .cpp`にあります。
+ゲームルールだけで完結するSystemは`Systems/`、D3D12のBuffer更新まで責任を持つSystemは
+`DirectX12/`へ置き、どちらの場合もComponentに状態、Systemに処理を分離してください。
 
 Componentは状態データだけ、Systemは更新処理だけを担当します。
 `SceneRegistry.h`はEntityとComponent Storage、`SceneSystemManager.h`はSystemの登録順と呼び出しだけを管理します。
@@ -47,6 +50,11 @@ Componentは状態データだけ、Systemは更新処理だけを担当しま�
 | `rendering_settings_component` | VSync、IBL、Mesh Shaderなど |
 | `animation_controller_component` | Animation State、Clip、速度、Loop |
 | `prefab_component` | 配置元Prefabのパス |
+| `gameplay_tag_component` | Player、Enemy、Goalなどゲーム用途の識別子 |
+| `map_object_component` | Static分類、Map Layer、配置グリッド幅 |
+| `collider_component` | Box／Sphere／Capsule、Layer、Mask、Trigger |
+| `rigid_body_component` | Static／Kinematic／Dynamic、質量、速度、重力、摩擦、反発 |
+| `character_controller_component` | キャラクター移動要求、接地、重力、ジャンプ設定 |
 
 `scene_registry`はEntity IDとComponentの保存領域を管理します。
 描画側はModel Rendererを持つEntityを列挙し、AnimationやTransformがあれば組み合わせて処理します。
@@ -103,17 +111,19 @@ void apply_damage(scene_registry& scene, float damage)
 - Scene／PrefabへのJSON保存とInspector表示はComponentごとに追加する。
 - System間で処理順が必要な場合は、依存順を明示してフレーム処理へ登録する。
 
-## 現在のSystem順序
+## 現在の更新と描画順序
 
-1. 非同期Asset読込み完了処理
-2. `PostProcessSystem`
-3. `AnimationSystem`
-4. Editor入力とInspector編集
-5. Camera更新
-6. Reflection Floor描画
-7. Model Renderer描画
-8. Post Process描画
-9. GizmoとEditor UI描画
+実際の呼出し元は `DirectX12/NativePreview.cpp` です。新しいSystemはファイルを作るだけでは動かず、`update` から呼びます。
+
+1. `update` の `poll_model_load` で非同期読込み結果を回収する。
+2. リサイズ要求を反映し、Pause／Stepを考慮した `scene_delta` を求める。
+3. Animationを更新する。
+4. 反射床の高さを床ColliderのTransformへ反映する。
+5. Physicsを更新する。移動要求はこの前、衝突イベントを読む処理はこの後へ追加する。
+6. `render` でカメラ行列を計算し、平面反射、床、モデル、画面効果を描く。
+7. DebugではInspectorやGizmoなどの編集UIを処理する。
+
+ゲーム機能とモデル描画の追加手順は [実装案内](Documentation/IMPLEMENTATION_MAP.md) を参照してください。
 
 ## ゲームSceneの作成と保存
 
@@ -146,17 +156,17 @@ Project / AssetsでglTFまたはGLBをダブルクリックすると、現在の
 Scene読込み時は保存されたAssetパスから必要なモデルを再読込みします。
 現在は一つのSceneで最大8種類の異なるモデルAssetを使用できます。同じAssetのEntity複製数にはこの制限はありません。
 
-Reflection Floorは標準で平面反射を使います。同じAnimation Poseを床面対称に別Render Targetへ描くため、SSRのように画面外で鏡像が途切れません。`Stable Planar Reflection`をOFFにするとShader III Unit08方式のSSRへ切り替わり、画面内情報だけを使う挙動を確認できます。
+Reflection Floorは標準で平面反射を使います。同じAnimation Poseを床面対称に別Render Targetへ描くため、SSRのように画面外で鏡像が途切れません。`Stable Planar Reflection`をOFFにすると画面内の色と深度を利用するSSRへ切り替わり、画面内情報だけを使う挙動を確認できます。
 
 ## 次に追加する場合の推奨Component
 
-- `collider_component`と`rigid_body_component`
+- 既存のCollider／RigidBodyを利用するゲーム固有Component
 - `fighter_controller_component`
 - `hit_box_component`と`hurt_box_component`
 - `audio_source_component`
 - `script_component`
 - `parent_component`と`children_component`
-- `prefab_component`
+- 複数Entity Prefabの親子関係・Override管理用Component
 - `camera_follow_component`
 
 格闘ゲーム固有機能も、入力、移動、攻撃判定、体力、演出を別Componentへ分けると、

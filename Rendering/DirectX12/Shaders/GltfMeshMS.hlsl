@@ -7,6 +7,7 @@ cbuffer SceneConstants : register(b0)
     row_major float4x4 view;
     row_major float4x4 projection;
     row_major float4x4 inverse_view;
+    row_major float4x4 normal_world;
     float4 base_color_factor;
     float4 emissive_metallic;
     float4 roughness_flags;
@@ -49,6 +50,7 @@ struct VSOutput
     float tangent_sign : TANGENT1;
     float2 uv : TEXCOORD;
     float3 view_position : TEXCOORD1;
+    float3 world_position : TEXCOORD2;
 };
 
 uint3 unpack_triangle(uint packed)
@@ -86,10 +88,12 @@ void MSMain(uint thread_id : SV_GroupThreadID, uint group_id : SV_GroupID,
     float4 view_position = mul(world_position, view);
     VSOutput output;
     output.position = mul(view_position, projection);
-    output.normal = normalize(mul(mul(normal, (float3x3)world), (float3x3)view));
-    output.tangent = normalize(mul(mul(tangent, (float3x3)world), (float3x3)view));
-    output.tangent_sign = input.tangent.w;
+    // 通常頂点経路と同じ逆転置を使い、非一様Scaleでも法線の向きを一致させる。
+    output.normal = normalize(mul(mul(normal, (float3x3)normal_world), (float3x3)view));
+    output.tangent = mul(mul(tangent, (float3x3)world), (float3x3)view);
+    output.tangent_sign = input.tangent.w * (determinant((float3x3)world) < 0 ? -1 : 1);
     output.uv = input.texcoord;
     output.view_position = view_position.xyz;
+    output.world_position = world_position.xyz;
     output_vertices[thread_id] = output;
 }

@@ -7,7 +7,7 @@
 #include <memory>
 #include <wrl.h>
 
-// Scene Color/Depth/Normalを画面空間でレイマーチし、BackBufferへ合成するSSRパス。
+// Scene Color/Depth/Normalを使い、SSAO・任意のSSR・手続き空・HDR色調を画面へ合成するパス。
 // 新しい画面効果も「入力Render TargetをSRV化→専用Passで出力→次用途へBarrier」の形で追加する。
 // 同じResourceをRTVとSRVとして同時にBindingしないこと。画面外の物体が映らないのはSSRの仕様。
 class screen_space_reflection12
@@ -16,16 +16,18 @@ public:
 	bool initialize(std::shared_ptr<directx12_device> device);
 	void begin_frame(UINT frame_index);
 	void render(ID3D12GraphicsCommandList* command_list, const scene_render_target12& scene,
-		const DirectX::XMFLOAT4X4& projection, float strength, float max_distance,
-		float thickness, std::uint32_t steps, float exposure = 1.0f);
+		const DirectX::XMFLOAT4X4& projection, const DirectX::XMFLOAT4X4& view, float strength, float max_distance,
+		float thickness, std::uint32_t steps, float exposure, float ao_strength, float ao_radius,
+		D3D12_GPU_VIRTUAL_ADDRESS lighting);
 
 private:
 	struct constants
 	{
 		DirectX::XMFLOAT4X4 projection{};
 		DirectX::XMFLOAT4X4 inverse_projection{};
+		DirectX::XMFLOAT4X4 inverse_view{};
 		DirectX::XMFLOAT4 parameters{}; // x:強さ y:距離 z:厚み w:ステップ数
-		DirectX::XMFLOAT4 display_parameters{ 1, 0, 0, 0 }; // x:露出
+		DirectX::XMFLOAT4 display_parameters{ 1, 0, 0, 0 }; // x:露出 y:AO強さ z:AO半径
 	};
 
 	std::shared_ptr<directx12_device> device_;
@@ -34,4 +36,5 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> constants_buffer_;
 	std::byte* mapped_constants_ = nullptr;
 	UINT frame_index_ = 0;
+	UINT pass_index_ = 0;
 };

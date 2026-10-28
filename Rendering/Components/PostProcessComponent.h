@@ -1,6 +1,7 @@
 #pragma once
 
-// Bloom、FXAA、DOFなど、最終画面へ適用する設定データ。
+// 最終画面の露出とSSAOを調整する状態。その他の効果項目は保存されている拡張用データで、
+// この宣言に項目があるだけでは実行されない。有効な描画処理はScreenSpaceReflection.cppで確認する。
 struct post_process_component
 {
 	float effect_time = 0.0f;
@@ -8,6 +9,10 @@ struct post_process_component
 	float gaussian_sigma = 1.0f;
 	float bloom_intensity = 1.0f;
 	float exposure = 1.2f;
+	// SSAOは近くの面が遮る環境光を画面の深度から近似する。影Mapとは別に接地や隅を強調する。
+	bool ambient_occlusion = true;
+	float ao_strength = 0.65f;
+	float ao_radius = 0.6f;
 	bool flow_enabled = false;
 	bool dof_enabled = false;
 	bool vignette_enabled = false;

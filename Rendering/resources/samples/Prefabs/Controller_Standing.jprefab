@@ -1,0 +1,57 @@
+{
+  "format": "JisakuEnginePrefab",
+  "entity": {
+    "name": "Controller_Standing",
+    "transform": {
+      "position": [
+        0,
+        3,
+        0
+      ],
+      "scale3": [
+        0.7,
+        1.8,
+        0.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    "model_renderer": {
+      "asset": "resources/samples/Models/Block_Yellow.gltf",
+      "visible": true
+    },
+    "gameplay_tag": "Player",
+    "map_object": {
+      "layer": 0,
+      "grid_size": 1,
+      "static": false,
+      "snap_to_grid": true
+    },
+    "collider": {
+      "trigger": false,
+      "layer": 0,
+      "shape": 0,
+      "enabled": true,
+      "mask": 4294967295,
+      "center": [
+        0,
+        0.5,
+        0
+      ],
+      "half_extents": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "character_controller": {
+      "gravity": 19.6,
+      "enabled": true,
+      "jump_speed": 7
+    }
+  },
+  "version": 1
+}
